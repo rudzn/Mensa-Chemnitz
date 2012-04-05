@@ -2,6 +2,12 @@
 
 http://developer.android.com/sdk/installing.html
 
+===Git Plugin für Eclipse (kein muss):===
+
+Egit
+in Eclipse:
+Help->Marketplace->egit suchen
+Tutorial: http://www.vogella.de/articles/EGit/article.html
 
 ===Anleitung für Import nach Eclipse:===
 
