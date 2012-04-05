@@ -495,7 +495,8 @@ public class MensaService extends Service {
 	private String inWork_XML_working = "";
 	private String inWork_XML_status = "";
 
-	private void inWork_XML_set_working(String mensa, int Year, int Month, int Day) {
+	private void inWork_XML_set_working(String mensa, int Year, int Month,
+			int Day) {
 		synchronized (inWork_XML_working) {
 
 			inWork_XML_working += "|" + Year + Month + Day + mensa + "|";
@@ -503,17 +504,20 @@ public class MensaService extends Service {
 		}
 	}
 
-	private void inWork_XML_remove_working(String mensa, int Year, int Month, int Day) {
+	private void inWork_XML_remove_working(String mensa, int Year, int Month,
+			int Day) {
 		synchronized (inWork_XML_working) {
-			inWork_XML_working = inWork_XML_working.replace("|" + Year + Month + Day + mensa + "|",
-					"");
+			inWork_XML_working = inWork_XML_working.replace("|" + Year + Month
+					+ Day + mensa + "|", "");
 		}
 	}
 
-	private boolean inWork_XML_start_working(String mensa, int Year, int Month, int Day) {
+	private boolean inWork_XML_start_working(String mensa, int Year, int Month,
+			int Day) {
 		synchronized (inWork_XML_working) {
-			if (!inWork_XML_working.contains("|" + Year + Month + Day + mensa + "|")) {
-				inWork_XML_set_working(mensa,Year,Month,Day);
+			if (!inWork_XML_working.contains("|" + Year + Month + Day + mensa
+					+ "|")) {
+				inWork_XML_set_working(mensa, Year, Month, Day);
 				return true;
 			}
 
@@ -523,37 +527,43 @@ public class MensaService extends Service {
 
 	private void inWork_XML_set_ready(String mensa, int Year, int Month, int Day) {
 		synchronized (inWork_XML_status) {
-			if (inWork_XML_is_ready(mensa,Year,Month,Day))
-				inWork_XML_status = inWork_XML_status.replace(
-						"|" + Year + Month + Day + mensa + "u|", "|" + Year + Month + Day + mensa + "r|");
+			if (inWork_XML_is_ready(mensa, Year, Month, Day))
+				inWork_XML_status = inWork_XML_status.replace("|" + Year
+						+ Month + Day + mensa + "u|", "|" + Year + Month + Day
+						+ mensa + "r|");
 			else
 				inWork_XML_status += "|" + Year + Month + Day + mensa + "r|";
 		}
 	}
 
-	private void inWork_XML_set_updated(String mensa, int Year, int Month, int Day) {
+	private void inWork_XML_set_updated(String mensa, int Year, int Month,
+			int Day) {
 		synchronized (inWork_XML_status) {
-			if (inWork_XML_is_ready(mensa,Year,Month,Day))
-				inWork_XML_status = inWork_XML_status.replace(
-						"|" + Year + Month + Day + mensa + "r|", "|" + Year + Month + Day + mensa + "u|");
+			if (inWork_XML_is_ready(mensa, Year, Month, Day))
+				inWork_XML_status = inWork_XML_status.replace("|" + Year
+						+ Month + Day + mensa + "r|", "|" + Year + Month + Day
+						+ mensa + "u|");
 			else
 				inWork_XML_status += "|" + Year + Month + Day + mensa + "u|";
 		}
 	}
 
-	private void inWork_XML_remove_status(String mensa, int Year, int Month, int Day) {
+	private void inWork_XML_remove_status(String mensa, int Year, int Month,
+			int Day) {
 		synchronized (inWork_XML_status) {
-			inWork_XML_status = inWork_XML_status
-					.replace("|" + Year + Month + Day + mensa + "r|", "");
-			inWork_XML_status = inWork_XML_status
-					.replace("|" + Year + Month + Day + mensa + "u|", "");
+			inWork_XML_status = inWork_XML_status.replace("|" + Year + Month
+					+ Day + mensa + "r|", "");
+			inWork_XML_status = inWork_XML_status.replace("|" + Year + Month
+					+ Day + mensa + "u|", "");
 
 		}
 	}
 
-	private boolean inWork_XML_is_updated(String mensa, int Year, int Month, int Day) {
+	private boolean inWork_XML_is_updated(String mensa, int Year, int Month,
+			int Day) {
 		synchronized (inWork_XML_status) {
-			if (inWork_XML_status.contains("|" + Year + Month + Day + mensa + "u|")) {
+			if (inWork_XML_status.contains("|" + Year + Month + Day + mensa
+					+ "u|")) {
 				return true;
 			}
 
@@ -561,9 +571,11 @@ public class MensaService extends Service {
 		}
 	}
 
-	private boolean inWork_XML_is_ready(String mensa, int Year, int Month, int Day) {
+	private boolean inWork_XML_is_ready(String mensa, int Year, int Month,
+			int Day) {
 		synchronized (inWork_XML_status) {
-			if (inWork_XML_status.contains("|" + Year + Month + Day + mensa + "r|")) {
+			if (inWork_XML_status.contains("|" + Year + Month + Day + mensa
+					+ "r|")) {
 				return true;
 			}
 
@@ -574,36 +586,36 @@ public class MensaService extends Service {
 	private status prepareXML(String mensa, int inYear, int inMonth, int inDay,
 			boolean updateNow, boolean isExistingCheck) throws CustomException {
 
-		if (inWork_XML_is_updated(mensa,inYear,inMonth,inDay))
+		if (inWork_XML_is_updated(mensa, inYear, inMonth, inDay))
 			return status.Updated;
 
-		if (inWork_XML_is_ready(mensa,inYear,inMonth,inDay) && !updateNow)
+		if (inWork_XML_is_ready(mensa, inYear, inMonth, inDay) && !updateNow)
 			return status.Existing;
 
-		if (inWork_XML_start_working(mensa,inYear,inMonth,inDay)) {
+		if (inWork_XML_start_working(mensa, inYear, inMonth, inDay)) {
 
-			if (updateNow || !fileExists_XML(mensa,inYear,inMonth,inDay)) {
+			if (updateNow || !fileExists_XML(mensa, inYear, inMonth, inDay)) {
 				if (isExistingCheck) {
-					inWork_XML_remove_working(mensa,inYear,inMonth,inDay);
+					inWork_XML_remove_working(mensa, inYear, inMonth, inDay);
 					return status.nonExisting;
 				}
 
 				try {
-					Boolean stat = loadXMLtoSD(mensa,inYear,inMonth,inDay);
-					inWork_XML_set_updated(mensa,inYear,inMonth,inDay);
-					inWork_XML_remove_working(mensa,inYear,inMonth,inDay);
+					Boolean stat = loadXMLtoSD(mensa, inYear, inMonth, inDay);
+					inWork_XML_set_updated(mensa, inYear, inMonth, inDay);
+					inWork_XML_remove_working(mensa, inYear, inMonth, inDay);
 					if (stat)
 						return status.nowUpdated;
 					else
 						return status.nonUpdated;
 
 				} catch (CustomException e) {
-					inWork_XML_remove_working(mensa,inYear,inMonth,inDay);
+					inWork_XML_remove_working(mensa, inYear, inMonth, inDay);
 					throw e;
 				}
 			}
-			inWork_XML_set_ready(mensa,inYear,inMonth,inDay);
-			inWork_XML_remove_working(mensa,inYear,inMonth,inDay);
+			inWork_XML_set_ready(mensa, inYear, inMonth, inDay);
+			inWork_XML_remove_working(mensa, inYear, inMonth, inDay);
 			return status.Existing;
 		}
 		return status.working;
@@ -656,8 +668,8 @@ public class MensaService extends Service {
 
 	private boolean loadXMLtoSD(String mensa, int Year, int Month, int Day)
 			throws CustomException {
-		if(mensa=="st")
-			mensa="strana";
+		if (mensa == "st")
+			mensa = "strana";
 		try {
 			String url = "http://www-user.tu-chemnitz.de/~fnor/mensa/webservice_xml_2.php?mensa="
 					+ mensa
@@ -801,9 +813,9 @@ public class MensaService extends Service {
 	}
 
 	private void CreateDir() {
-		
+
 		root.mkdir();
-		
+
 		File noMedia = new File(root + "/.nomedia");
 		try {
 			noMedia.createNewFile();
@@ -890,11 +902,10 @@ public class MensaService extends Service {
 	}
 
 	public void del_oldpic() {
-		
-		//Kann in nachfolgenden Versionen wieder weg
+
+		// Kann in nachfolgenden Versionen wieder weg
 		CreateDir();
-		
-		
+
 		Calendar caldel = new GregorianCalendar(mYear, mMonth, mDay);
 
 		if (storage_state.contains("mounted")) {
@@ -902,11 +913,11 @@ public class MensaService extends Service {
 
 				if (root.isDirectory()) {
 
-					String u1,u2mensa,imgName,imgpixelSize;
-					int  u2day, u2month, u2year;
-					imgName="";
-					imgpixelSize="";
-					u2mensa="";
+					String u1, u2mensa, imgName, imgpixelSize;
+					int u2day, u2month, u2year;
+					imgName = "";
+					imgpixelSize = "";
+					u2mensa = "";
 					File[] filelist_of_cache = root.listFiles();
 
 					for (int i = 0; i <= filelist_of_cache.length - 1; i++) {
@@ -924,60 +935,63 @@ public class MensaService extends Service {
 														.length() - 3,
 												filelist_of_cache[i].toString()
 														.length());
-								if(MimeType.equals("png"))
-								imgName = filelist_of_cache[i]
+								if (MimeType.equals("png"))
+									imgName = filelist_of_cache[i]
+											.toString()
+											.substring(
+													root.toString().length() + 22,
+													root.toString().length() + 26);
+
+								if (MimeType.equals("png"))
+									imgpixelSize = filelist_of_cache[i]
+											.toString()
+											.substring(
+													root.toString().length() + 27,
+													root.toString().length() + 31);
+
+								if (MimeType.equals("xml"))
+									u2mensa = filelist_of_cache[i]
+											.toString()
+											.substring(
+													root.toString().length() + 22,
+													root.toString().length() + 23);
+								u2day = Integer.parseInt(filelist_of_cache[i]
 										.toString().substring(
-												root.toString().length() + 22,
-												root.toString().length() + 26);
-								
-								if(MimeType.equals("png"))
-								imgpixelSize = filelist_of_cache[i]
-										.toString().substring(
-												root.toString().length() + 27,
-												root.toString().length() + 31);
-								
-								if(MimeType.equals("xml"))
-								u2mensa= filelist_of_cache[i].toString()
-								.substring(
-										root.toString().length() + 22,
-										root.toString().length() + 23);
-								u2day = Integer.parseInt(filelist_of_cache[i].toString()
-										.substring(
 												root.toString().length() + 19,
 												root.toString().length() + 21));
-								u2month = Integer.parseInt(filelist_of_cache[i].toString()
-										.substring(
+								u2month = Integer.parseInt(filelist_of_cache[i]
+										.toString().substring(
 												root.toString().length() + 16,
 												root.toString().length() + 18));
-								u2year = Integer.parseInt(filelist_of_cache[i].toString()
-										.substring(
+								u2year = Integer.parseInt(filelist_of_cache[i]
+										.toString().substring(
 												root.toString().length() + 11,
 												root.toString().length() + 15));
-								
-			
+
 								// u2mensa = filelist_of_cache[i].toString()
 								// .substring(
 								// root.toString().length() + 22,
 								// root.toString().length() + 24);
 
 								Calendar caldel2 = new GregorianCalendar(
-										u2year,
-										u2month,
-										u2day);
+										u2year, u2month, u2day);
 
 								if (caldel.compareTo(caldel2) == 1) {
 									synchronized (FileSync) {
 
-										if (MimeType.equals("xml") &&
-												inWork_XML_start_working(u2mensa,u2year,u2month,u2day)
-												) {
-											inWork_XML_remove_status(u2mensa,u2year,u2month,u2day);
+										if (MimeType.equals("xml")
+												&& inWork_XML_start_working(
+														u2mensa, u2year,
+														u2month, u2day)) {
+											inWork_XML_remove_status(u2mensa,
+													u2year, u2month, u2day);
 											filelist_of_cache[i].delete();
-											inWork_XML_remove_working(u2mensa,u2year,u2month,u2day);
+											inWork_XML_remove_working(u2mensa,
+													u2year, u2month, u2day);
 										}
-										if (MimeType.equals("png") && inWork_Image_start_working(imgName
-												+ "_" + imgpixelSize)
-												) {
+										if (MimeType.equals("png")
+												&& inWork_Image_start_working(imgName
+														+ "_" + imgpixelSize)) {
 											inWork_Image_remove_status(imgName
 													+ "_" + imgpixelSize);
 											filelist_of_cache[i].delete();
@@ -987,8 +1001,7 @@ public class MensaService extends Service {
 									}
 								}
 							}
-						} catch (Exception e)
-						{
+						} catch (Exception e) {
 
 						}
 

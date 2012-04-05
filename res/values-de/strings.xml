@@ -39,5 +39,6 @@
 
 <string name="image_pixel_size">Bildqualität hoch</string>
 <string name="image_pixel_size_text">(Noch nicht alle Bilder)</string>
+<string name="SocialSend">Senden</string>
 
 </resources>

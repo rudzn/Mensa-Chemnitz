@@ -40,5 +40,6 @@
 
 <string name="image_pixel_size">Better image quality</string>
 <string name="image_pixel_size_text">(not all at the moment)</string>
+<string name="SocialSend">Send</string>
 
 </resources>
