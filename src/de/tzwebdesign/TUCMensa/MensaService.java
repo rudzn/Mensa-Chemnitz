@@ -583,6 +583,23 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Prüft ob Datei vorhanden, wenn nicht wird sie aus Netz geladen
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param inYear
+	 * @param inMonth
+	 * @param inDay
+	 * @param updateNow
+	 *            Wenn True wird die Datei aktualisiert (auch wenn schon
+	 *            vorhanden)
+	 * @param isExistingCheck
+	 *            Wenn True wird keine aktualisierung vorgenommen sondern nur
+	 *            die existenz geprüft (überschreibt updateNow)
+	 * @return
+	 * @throws CustomException
+	 */
 	private status prepareXML(String mensa, int inYear, int inMonth, int inDay,
 			boolean updateNow, boolean isExistingCheck) throws CustomException {
 
@@ -644,6 +661,23 @@ public class MensaService extends Service {
 				isExistingCheck);
 	}
 
+	/**
+	 * Prüft ob Datei vorhanden, wenn nicht wird sie aus Netz geladen
+	 * Dabei wird gewartet das ein Slot zur bearbeitung frei wird
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @param updateNow
+	 *            Wenn True wird die Datei aktualisiert (auch wenn schon
+	 *            vorhanden)
+	 * @param isExistingCheck
+	 *            Wenn True wird keine aktualisierung vorgenommen sondern nur
+	 *            die existenz geprüft (überschreibt updateNow)
+	 * @return status
+	 * @throws CustomException
+	 */
 	public status getXML_status(String mensa, int Year, int Month, int Day,
 			boolean updateNow, boolean isExistingCheck) throws CustomException {
 		status stat = null;
@@ -1016,8 +1050,9 @@ public class MensaService extends Service {
 
 	/**
 	 * 
-	 * @param mensa 
-	 * @return
+	 * @param mensa
+	 *            rh oder st
+	 * @return true wenn daten aktualisert
 	 */
 	public boolean LoadAllXML(String mensa) {
 		Calendar cal = new GregorianCalendar(mYear, mMonth - 1, mDay);
@@ -1052,6 +1087,13 @@ public class MensaService extends Service {
 		return stat;
 	}
 
+	/**
+	 * Lässt prüfen ob alle Datein vorhanden sind (Das Ergebnis landet dabei im
+	 * program, und hällt im ram Datei status vor)
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 */
 	public void checkAllXML(String mensa) {
 		Calendar cal = new GregorianCalendar(mYear, mMonth - 1, mDay);
 
