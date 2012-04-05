@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+   <PreferenceCategory android:title="Einstellungen"> 
+<EditTextPreference android:key="offset" android:summary="@string/Offset_text" android:title="@string/Offset"></EditTextPreference>
+
+<ListPreference android:entries="@array/Mensen" android:key="mensa" android:title="@string/mensa" android:entryValues="@array/Mensen_value"></ListPreference>
+
+<ListPreference android:entries="@array/Preise" android:key="preiskat" android:title="@string/Preiskat" android:entryValues="@array/Preise_value"></ListPreference>
+<ListPreference android:entries="@array/Sprachen" android:key="sprache" android:title="@string/sprache" android:entryValues="@array/Sprachen_value"></ListPreference>
+ </PreferenceCategory>
+   <PreferenceCategory android:title="Optional">
+
+<CheckBoxPreference android:key="imageloading" android:summary="@string/imageloading_text" android:title="@string/imageloading"></CheckBoxPreference>
+
+<CheckBoxPreference android:defaultValue="true" android:key="image_pixel_size_big" android:summary="@string/image_pixel_size_text" android:title="@string/image_pixel_size"></CheckBoxPreference>
+<CheckBoxPreference android:key="imagesize" android:summary="@string/imagesize_text" android:title="@string/imagesize"></CheckBoxPreference>
+
+
+<CheckBoxPreference android:key="ListViewFirst" android:summary="@string/ListViewFirst_text" android:title="@string/ListViewFirst"></CheckBoxPreference>
+</PreferenceCategory>
+</PreferenceScreen>

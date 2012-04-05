@@ -1,0 +1,82 @@
+<RelativeLayout android:id="@+id/RelativeLayout01" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
+
+<RelativeLayout android:id="@+id/RelativeLayout02" android:layout_width="fill_parent" android:layout_height="fill_parent"
+   android:layout_above="@+id/TextView01"
+     android:layout_below="@+id/TextView04"
+ xmlns:android="http://schemas.android.com/apk/res/android">
+ 
+ <ProgressBar
+ android:layout_width="wrap_content" 
+    android:layout_height="wrap_content" 
+  android:layout_centerHorizontal="true" 
+	android:layout_centerVertical="true"
+
+
+    android:id="@+id/progressbar_default" android:visibility="invisible">
+</ProgressBar>
+</RelativeLayout>
+
+<ImageView 
+android:id="@+id/ImageView01" 
+android:layout_centerHorizontal="true" 
+android:layout_below="@+id/TextView04" android:layout_above="@+id/TextView01" android:layout_marginLeft="10dip" android:layout_marginRight="10dip" android:layout_width="wrap_content" android:layout_height="wrap_content">
+</ImageView>
+
+
+
+<TextView 
+android:layout_height="wrap_content" 
+android:layout_width="wrap_content" 
+android:id="@+id/TextView04"
+android:layout_marginTop="30dip" android:layout_marginLeft="10dip" android:text="@string/essen_datum">
+</TextView>
+
+<TextView 
+android:id="@+id/TextView01" 
+android:text="@string/essen_text" 
+android:layout_width="fill_parent"
+android:layout_above="@+id/Button02" android:layout_height="70dip">
+</TextView>
+
+
+<TextView 
+android:id="@+id/TextView02"
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content" 
+android:text="@string/essen_name"
+android:layout_marginLeft="10dip" android:layout_marginTop="10dip">
+</TextView>
+
+<TextView 
+android:layout_height="wrap_content" 
+android:id="@+id/TextView03" 
+android:layout_width="wrap_content" 
+
+android:text="@string/euro"
+android:layout_alignParentTop="true"
+android:layout_alignParentRight="true" android:layout_marginTop="10dip" android:layout_marginRight="10dip">
+
+</TextView>
+
+
+<Button 
+android:id="@+id/Button02" 
+android:layout_width="100dip" 
+android:text="&lt;" 
+android:onClick="backward" 
+android:layout_alignParentBottom="true"
+android:layout_alignParentLeft="true" 
+android:layout_marginLeft="10dip" android:layout_height="40dip">
+</Button>
+
+<Button 
+android:id="@+id/Button03" 
+
+android:layout_width="100dip" 
+android:text="&gt;" 
+android:onClick="forward" 
+android:layout_marginRight="10dip" android:layout_alignParentBottom="true" android:layout_alignParentRight="true" android:layout_height="40dip">
+</Button>
+
+</RelativeLayout>
+

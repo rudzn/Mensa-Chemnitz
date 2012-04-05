@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<string-array name="Mensen">
+<item>Reichenhain</item>
+<item>Strana</item>
+</string-array>
+
+<string-array name="Preise">
+<item>student</item>
+<item>employee</item>
+<item>guest </item>
+</string-array>
+
+<string-array name="Sprachen">
+<item>Deutsch</item>
+<item>English</item>
+</string-array>
+
+<string-array name="Mensen_value">
+<item>rh</item>
+<item>st</item>
+</string-array>
+
+
+<string-array name="Preise_value">
+<item>s</item>
+<item>m</item>
+<item>g</item>
+</string-array>
+
+<string-array name="Sprachen_value">
+<item>de</item>
+<item>en</item>
+</string-array>
+
+</resources>

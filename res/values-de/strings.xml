@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="Offset">Nächste Tag</string>
+    <string name="Activityname_listview">Mensa Chemnitz Liste</string>
+    <string name="Offset_text">Stunden vor Mitternacht</string><string name="essen_datum"></string>
+    <string name="euro"></string>
+    <string name="sprache">Sprache:</string>
+    <string name="save">Speichern</string>
+    
+    
+    <string name="mensa">Mensa:</string>
+    <string name="Preiskat">Preis:</string>
+    <string name="essen_name">Lade...</string>
+    <string name="essen_text"></string>
+    
+    <string name="app_name">Mensa Chemnitz</string>
+    
+    <string name="mensa_prompt">Mensa auswählen</string>
+
+<string name="Konfiguration">Konfiguration</string>
+<string name="Beenden">Beenden</string>
+
+<string name="Activityname_main">Mensa Chemnitz</string>
+<string name="sprache_default">de</string>
+
+<string name="Activityname_pref">Mensa Chemnitz Einstellungen</string>
+<string name="Listenansicht">Listenansicht</string>
+
+<string name="imageloading">Bilder vorladen</string>
+<string name="imageloading_text">Alle Bilder des aktuellen Tages mit einmal laden</string>
+
+<string name="imagesize">Bilder in Originalgröße</string>
+<string name="imagesize_text">großziehen abschalten</string>
+
+<string name="ListViewFirst">Listenansicht</string>
+<string name="ListViewFirst_text">Zeige Listenansicht als Standard</string>
+
+<string name="findNewEssen">Plan aktualisiert!</string>
+
+<string name="image_pixel_size">Bildqualität hoch</string>
+<string name="image_pixel_size_text">(Noch nicht alle Bilder)</string>
+
+</resources>
