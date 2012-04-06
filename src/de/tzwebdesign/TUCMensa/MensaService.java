@@ -15,8 +15,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -676,14 +678,33 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Speichert ob XMl Datei gerade in bearbeitung
+	 * Speichert die XML Dateien welche gerade in bearbeitung
 	 */
-	private String inWork_XML_working = "";
+	private List<String> inWork_XML_working = new ArrayList<String>();
+
+	
+	
+	
+	
+	
+	private enum filestatus {
+		ready, updated
+	};
+	
+	private class inWork_XML_status_intern {
+	    public String file;
+	    public filestatus status;
+	    //constructor
+	    public inWork_XML_status_intern(String fileIn, filestatus statusIn) {
+	        file = fileIn;
+	        status = statusIn;
+	    }
+	}
 
 	/**
 	 * Speichert Status der XML Dateien
 	 */
-	private String inWork_XML_status = "";
+	private List<inWork_XML_status_intern> inWork_XML_status = new ArrayList<inWork_XML_status_intern>();
 
 	/**
 	 * Setzt XML Datei auf 'working'
@@ -697,8 +718,7 @@ public class MensaService extends Service {
 	private void inWork_XML_set_working(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_working) {
-
-			inWork_XML_working += "|" + Year + Month + Day + mensa + "|";
+			inWork_XML_working.add((new Integer(Year)).toString() +  (new Integer(Month)).toString() +  (new Integer(Day)).toString() + mensa);
 
 		}
 	}
@@ -715,8 +735,7 @@ public class MensaService extends Service {
 	private void inWork_XML_remove_working(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_working) {
-			inWork_XML_working = inWork_XML_working.replace("|" + Year + Month
-					+ Day + mensa + "|", "");
+			inWork_XML_working.remove((new Integer(Year)).toString() +  (new Integer(Month)).toString() +  (new Integer(Day)).toString() + mensa);
 		}
 	}
 
@@ -732,8 +751,7 @@ public class MensaService extends Service {
 	private boolean inWork_XML_start_working(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_working) {
-			if (!inWork_XML_working.contains("|" + Year + Month + Day + mensa
-					+ "|")) {
+			if (!inWork_XML_working.contains((new Integer(Year)).toString() +  (new Integer(Month)).toString() +  (new Integer(Day)).toString() + mensa)) {
 				inWork_XML_set_working(mensa, Year, Month, Day);
 				return true;
 			}
@@ -754,11 +772,9 @@ public class MensaService extends Service {
 	private void inWork_XML_set_ready(String mensa, int Year, int Month, int Day) {
 		synchronized (inWork_XML_status) {
 			if (inWork_XML_is_ready(mensa, Year, Month, Day))
-				inWork_XML_status = inWork_XML_status.replace("|" + Year
-						+ Month + Day + mensa + "u|", "|" + Year + Month + Day
-						+ mensa + "r|");
+				inWork_XML_status.remove(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.updated));
 			else
-				inWork_XML_status += "|" + Year + Month + Day + mensa + "r|";
+				inWork_XML_status.add(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.ready));
 		}
 	}
 
@@ -775,11 +791,9 @@ public class MensaService extends Service {
 			int Day) {
 		synchronized (inWork_XML_status) {
 			if (inWork_XML_is_ready(mensa, Year, Month, Day))
-				inWork_XML_status = inWork_XML_status.replace("|" + Year
-						+ Month + Day + mensa + "r|", "|" + Year + Month + Day
-						+ mensa + "u|");
+				inWork_XML_status.remove(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.ready));
 			else
-				inWork_XML_status += "|" + Year + Month + Day + mensa + "u|";
+				inWork_XML_status.add(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.updated));
 		}
 	}
 
@@ -795,11 +809,8 @@ public class MensaService extends Service {
 	private void inWork_XML_remove_status(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_status) {
-			inWork_XML_status = inWork_XML_status.replace("|" + Year + Month
-					+ Day + mensa + "r|", "");
-			inWork_XML_status = inWork_XML_status.replace("|" + Year + Month
-					+ Day + mensa + "u|", "");
-
+			inWork_XML_status.add(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.ready));
+			inWork_XML_status.add(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.updated));
 		}
 	}
 
@@ -816,8 +827,7 @@ public class MensaService extends Service {
 	private boolean inWork_XML_is_updated(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_status) {
-			if (inWork_XML_status.contains("|" + Year + Month + Day + mensa
-					+ "u|")) {
+			if (inWork_XML_status.contains(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.updated))) {
 				return true;
 			}
 
@@ -838,8 +848,7 @@ public class MensaService extends Service {
 	private boolean inWork_XML_is_ready(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_status) {
-			if (inWork_XML_status.contains("|" + Year + Month + Day + mensa
-					+ "r|")) {
+			if (inWork_XML_status.contains(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.ready))) {
 				return true;
 			}
 
