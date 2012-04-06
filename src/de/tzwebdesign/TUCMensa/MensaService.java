@@ -58,6 +58,10 @@ public class MensaService extends Service {
 		return mDay;
 	}
 
+	/**
+	 * Setzt die Datumsfelder unter einbeziehung des UserKonfigurierbaren
+	 * Offsets Wochenenden werden übersprungen
+	 */
 	public void setdate() {
 
 		SharedPreferences settings = PreferenceManager
@@ -81,6 +85,12 @@ public class MensaService extends Service {
 		mDay = c.get(Calendar.DAY_OF_MONTH);
 	}
 
+	/**
+	 * Check ob Datum mittlerweile verändert (Weil App lange im Standby usw)
+	 * 
+	 * @return Liefert True wenn Datum von App mit neu berechnetem nicht
+	 *         übereinstimmt
+	 */
 	public boolean checkdate() {
 
 		SharedPreferences settings = PreferenceManager
@@ -178,8 +188,15 @@ public class MensaService extends Service {
 	// ###########################################################################################
 	// ###########################################################################################
 
+	/**
+	 * Pfad zur SD Karte
+	 */
 	private final File sdroot = new File(Environment
 			.getExternalStorageDirectory().toString());
+
+	/**
+	 * Pfad zum App Ordner auf SD Karte
+	 */
 	private final File root = new File(Environment
 			.getExternalStorageDirectory().toString() + "/TUCMensa");
 
@@ -188,10 +205,17 @@ public class MensaService extends Service {
 	private NumberFormat nf = NumberFormat.getInstance();
 	private NumberFormat nf2 = NumberFormat.getInstance();
 
+	/**
+	 * status den eine Datei haben kann
+	 * 
+	 */
 	public enum status {
 		nonExisting, working, Existing, Updated, nowUpdated, nonUpdated
 	};
 
+	/**
+	 * Konstruktor
+	 */
 	public MensaService() {
 		nf.setMinimumIntegerDigits(2); // The minimum Digits required is 2
 		nf.setMaximumIntegerDigits(2); // The maximum Digits required is 2
@@ -203,9 +227,22 @@ public class MensaService extends Service {
 
 	}
 
+	/**
+	 * Speichert die gerade in arbeit befindlichen Bilder
+	 */
 	private String inWork_Image_working = "";
+
+	/**
+	 * Speichert den Status der Bilder
+	 */
 	private String inWork_Image_status = "";
 
+	/**
+	 * Markiert das Bild als 'in arbeit'
+	 * 
+	 * @param name
+	 *            Bildname
+	 */
 	private void inWork_Image_set_working(String name) {
 		synchronized (inWork_Image_working) {
 
@@ -214,6 +251,12 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * löscht das Bild wieder aus 'in arbeit'
+	 * 
+	 * @param name
+	 *            Bildname
+	 */
 	private void inWork_Image_remove_working(String name) {
 		synchronized (inWork_Image_working) {
 			inWork_Image_working = inWork_Image_working.replace("|" + name
@@ -221,6 +264,13 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Setzt das bild als 'in arbeit' wenn noch nicht als 'in arbeit' markiert
+	 * 
+	 * @param name
+	 *            Bildname
+	 * @return True wenn 'in arbeit' gesetzt wurde, False wenn schon 'in arbeit'
+	 */
 	private boolean inWork_Image_start_working(String name) {
 		synchronized (inWork_Image_working) {
 			if (!inWork_Image_working.contains("|" + name + "|")) {
@@ -232,6 +282,12 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Bild als ready markieren
+	 * 
+	 * @param name
+	 *            Bildname
+	 */
 	private void inWork_Image_set_ready(String name) {
 		synchronized (inWork_Image_status) {
 			if (inWork_Image_is_ready(name))
@@ -242,6 +298,12 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Bild als updated markieren
+	 * 
+	 * @param name
+	 *            Bildname
+	 */
 	private void inWork_Image_set_updated(String name) {
 		synchronized (inWork_Image_status) {
 			if (inWork_Image_is_ready(name))
@@ -252,6 +314,12 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Entfernt den Status des Bildes
+	 * 
+	 * @param name
+	 *            Bildname
+	 */
 	private void inWork_Image_remove_status(String name) {
 		synchronized (inWork_Image_status) {
 			inWork_Image_status = inWork_Image_status.replace(
@@ -262,6 +330,13 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Prüft Bildstatus auf 'updated'
+	 * 
+	 * @param name
+	 *            Bildname
+	 * @return True wenn Bildstatus 'updated'
+	 */
 	private boolean inWork_Image_is_updated(String name) {
 		synchronized (inWork_Image_status) {
 			if (inWork_Image_status.contains("|" + name + "u|")) {
@@ -272,6 +347,13 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Prüft Bildstatus auf 'ready'
+	 * 
+	 * @param name
+	 *            Bildname
+	 * @return True wenn Bildstatus 'ready'
+	 */
 	private boolean inWork_Image_is_ready(String name) {
 		synchronized (inWork_Image_status) {
 			if (inWork_Image_status.contains("|" + name + "r|")) {
@@ -282,6 +364,18 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Liefert Bild
+	 * 
+	 * @param imgName
+	 *            Bildname
+	 * @param isExistingCheck
+	 *            Bild nicht nachladen wenn fehlend
+	 * @param image_pixel_size
+	 *            Bildgröße
+	 * @return Bild
+	 * @throws CustomException
+	 */
 	public Bitmap getImage(String imgName, boolean isExistingCheck,
 			int image_pixel_size) throws CustomException {
 
@@ -291,6 +385,19 @@ public class MensaService extends Service {
 
 	}
 
+	/**
+	 * 
+	 * @param imgName
+	 *            Bildname
+	 * @param updateNow
+	 *            Bild aktualisieren
+	 * @param isExistingCheck
+	 *            Bild nicht nachladen wenn fehlend (überschreibt updateNow)
+	 * @param image_pixel_size
+	 *            Bildgröße
+	 * @return Status des Bildes
+	 * @throws CustomException
+	 */
 	private status prepareImage(String imgName, boolean updateNow,
 			boolean isExistingCheck, int image_pixel_size)
 			throws CustomException {
@@ -333,6 +440,21 @@ public class MensaService extends Service {
 		return status.working;
 	}
 
+	/**
+	 * Liefert den Bildstatus und Läd es wenn nötig nach (je nach parameter)
+	 * 
+	 * @param imgName
+	 *            Bildname
+	 * @param updateNow
+	 *            aktualisiert Bild
+	 * @param isExistingCheck
+	 *            Wenn nicht vorhanden auch nicht nachladen (überschreibt
+	 *            updateNow)
+	 * @param image_pixel_size
+	 *            Bildgröße
+	 * @return Status
+	 * @throws CustomException
+	 */
 	public status getImage_status(String imgName, boolean updateNow,
 			boolean isExistingCheck, int image_pixel_size)
 			throws CustomException {
@@ -662,8 +784,9 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Prüft ob Datei vorhanden, wenn nicht wird sie aus Netz geladen
-	 * Dabei wird gewartet das ein Slot zur bearbeitung frei wird
+	 * Prüft ob Datei vorhanden, wenn nicht wird sie aus Netz geladen Dabei wird
+	 * gewartet das ein Slot zur bearbeitung frei wird
+	 * 
 	 * @param mensa
 	 *            rh oder st
 	 * @param Year
