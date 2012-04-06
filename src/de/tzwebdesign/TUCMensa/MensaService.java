@@ -58,6 +58,10 @@ public class MensaService extends Service {
 		return mDay;
 	}
 
+	/**
+	 * Setzt die Datumsfelder unter einbeziehung des UserKonfigurierbaren
+	 * Offsets Wochenenden werden übersprungen
+	 */
 	public void setdate() {
 
 		SharedPreferences settings = PreferenceManager
@@ -81,6 +85,12 @@ public class MensaService extends Service {
 		mDay = c.get(Calendar.DAY_OF_MONTH);
 	}
 
+	/**
+	 * Check ob Datum mittlerweile verändert (Weil App lange im Standby usw)
+	 * 
+	 * @return Liefert True wenn Datum von App mit neu berechnetem nicht
+	 *         übereinstimmt
+	 */
 	public boolean checkdate() {
 
 		SharedPreferences settings = PreferenceManager
@@ -178,8 +188,15 @@ public class MensaService extends Service {
 	// ###########################################################################################
 	// ###########################################################################################
 
+	/**
+	 * Pfad zur SD Karte
+	 */
 	private final File sdroot = new File(Environment
 			.getExternalStorageDirectory().toString());
+
+	/**
+	 * Pfad zum App Ordner auf SD Karte
+	 */
 	private final File root = new File(Environment
 			.getExternalStorageDirectory().toString() + "/TUCMensa");
 
@@ -188,10 +205,17 @@ public class MensaService extends Service {
 	private NumberFormat nf = NumberFormat.getInstance();
 	private NumberFormat nf2 = NumberFormat.getInstance();
 
+	/**
+	 * status den eine Datei haben kann
+	 * 
+	 */
 	public enum status {
 		nonExisting, working, Existing, Updated, nowUpdated, nonUpdated
 	};
 
+	/**
+	 * Konstruktor
+	 */
 	public MensaService() {
 		nf.setMinimumIntegerDigits(2); // The minimum Digits required is 2
 		nf.setMaximumIntegerDigits(2); // The maximum Digits required is 2
@@ -203,9 +227,22 @@ public class MensaService extends Service {
 
 	}
 
+	/**
+	 * Speichert die gerade in arbeit befindlichen Bilder
+	 */
 	private String inWork_Image_working = "";
+
+	/**
+	 * Speichert den Status der Bilder
+	 */
 	private String inWork_Image_status = "";
 
+	/**
+	 * Markiert das Bild als 'in arbeit'
+	 * 
+	 * @param name
+	 *            Bildname
+	 */
 	private void inWork_Image_set_working(String name) {
 		synchronized (inWork_Image_working) {
 
@@ -214,6 +251,12 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * löscht das Bild wieder aus 'in arbeit'
+	 * 
+	 * @param name
+	 *            Bildname
+	 */
 	private void inWork_Image_remove_working(String name) {
 		synchronized (inWork_Image_working) {
 			inWork_Image_working = inWork_Image_working.replace("|" + name
@@ -221,6 +264,13 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Setzt das bild als 'in arbeit' wenn noch nicht als 'in arbeit' markiert
+	 * 
+	 * @param name
+	 *            Bildname
+	 * @return True wenn 'in arbeit' gesetzt wurde, False wenn schon 'in arbeit'
+	 */
 	private boolean inWork_Image_start_working(String name) {
 		synchronized (inWork_Image_working) {
 			if (!inWork_Image_working.contains("|" + name + "|")) {
@@ -232,6 +282,12 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Bild als ready markieren
+	 * 
+	 * @param name
+	 *            Bildname
+	 */
 	private void inWork_Image_set_ready(String name) {
 		synchronized (inWork_Image_status) {
 			if (inWork_Image_is_ready(name))
@@ -242,6 +298,12 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Bild als updated markieren
+	 * 
+	 * @param name
+	 *            Bildname
+	 */
 	private void inWork_Image_set_updated(String name) {
 		synchronized (inWork_Image_status) {
 			if (inWork_Image_is_ready(name))
@@ -252,6 +314,12 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Entfernt den Status des Bildes
+	 * 
+	 * @param name
+	 *            Bildname
+	 */
 	private void inWork_Image_remove_status(String name) {
 		synchronized (inWork_Image_status) {
 			inWork_Image_status = inWork_Image_status.replace(
@@ -262,6 +330,13 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Prüft Bildstatus auf 'updated'
+	 * 
+	 * @param name
+	 *            Bildname
+	 * @return True wenn Bildstatus 'updated'
+	 */
 	private boolean inWork_Image_is_updated(String name) {
 		synchronized (inWork_Image_status) {
 			if (inWork_Image_status.contains("|" + name + "u|")) {
@@ -272,6 +347,13 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Prüft Bildstatus auf 'ready'
+	 * 
+	 * @param name
+	 *            Bildname
+	 * @return True wenn Bildstatus 'ready'
+	 */
 	private boolean inWork_Image_is_ready(String name) {
 		synchronized (inWork_Image_status) {
 			if (inWork_Image_status.contains("|" + name + "r|")) {
@@ -282,6 +364,18 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Liefert Bild
+	 * 
+	 * @param imgName
+	 *            Bildname
+	 * @param isExistingCheck
+	 *            Bild nicht nachladen wenn fehlend
+	 * @param image_pixel_size
+	 *            Bildgröße
+	 * @return Bild
+	 * @throws CustomException
+	 */
 	public Bitmap getImage(String imgName, boolean isExistingCheck,
 			int image_pixel_size) throws CustomException {
 
@@ -291,6 +385,19 @@ public class MensaService extends Service {
 
 	}
 
+	/**
+	 * 
+	 * @param imgName
+	 *            Bildname
+	 * @param updateNow
+	 *            Bild aktualisieren
+	 * @param isExistingCheck
+	 *            Bild nicht nachladen wenn fehlend (überschreibt updateNow)
+	 * @param image_pixel_size
+	 *            Bildgröße
+	 * @return Status des Bildes
+	 * @throws CustomException
+	 */
 	private status prepareImage(String imgName, boolean updateNow,
 			boolean isExistingCheck, int image_pixel_size)
 			throws CustomException {
@@ -333,6 +440,21 @@ public class MensaService extends Service {
 		return status.working;
 	}
 
+	/**
+	 * Liefert den Bildstatus und Läd es wenn nötig nach (je nach parameter)
+	 * 
+	 * @param imgName
+	 *            Bildname
+	 * @param updateNow
+	 *            aktualisiert Bild
+	 * @param isExistingCheck
+	 *            Wenn nicht vorhanden auch nicht nachladen (überschreibt
+	 *            updateNow)
+	 * @param image_pixel_size
+	 *            Bildgröße
+	 * @return Status
+	 * @throws CustomException
+	 */
 	public status getImage_status(String imgName, boolean updateNow,
 			boolean isExistingCheck, int image_pixel_size)
 			throws CustomException {
@@ -356,12 +478,30 @@ public class MensaService extends Service {
 
 	}
 
+	/**
+	 * Prüft ob Bild vorhanden
+	 * 
+	 * @param name
+	 *            Bildname
+	 * @param image_pixel_size
+	 *            Bildgröße
+	 * @return True wenn Bild existiert
+	 */
 	private synchronized boolean fileExists_Image(String name,
 			int image_pixel_size) {
 
 		return (new File(getFilename_Image(name, image_pixel_size))).exists();
 	}
 
+	/**
+	 * Erzeugt Dateinamen für Bild
+	 * 
+	 * @param name
+	 *            Bildname
+	 * @param image_pixel_size
+	 *            Bildgröße
+	 * @return Dateiname
+	 */
 	private String getFilename_Image(String name, int image_pixel_size) {
 
 		String string = root.toString() + "/essenprev_" + nf2.format(mYear)
@@ -373,6 +513,16 @@ public class MensaService extends Service {
 	}
 
 	// private String loadIMAGEtoSD_string = "";
+
+	/**
+	 * Lädt Bild aus Netz und speichert es auf SD
+	 * 
+	 * @param name
+	 *            Bildname
+	 * @param image_pixel_size
+	 *            Bildgröße
+	 * @throws CustomException
+	 */
 	private boolean loadIMAGEtoSD(String name, int image_pixel_size)
 			throws CustomException {
 
@@ -429,6 +579,17 @@ public class MensaService extends Service {
 
 	}
 
+	/**
+	 * Speichert Bild auf SD
+	 * 
+	 * @param name
+	 *            Bildname
+	 * @param image
+	 *            Bild
+	 * @param image_pixel_size
+	 *            Bildgröße
+	 * @throws CustomException
+	 */
 	private synchronized void saveImage(String name, Bitmap image,
 			int image_pixel_size) throws CustomException {
 		try {
@@ -463,6 +624,16 @@ public class MensaService extends Service {
 
 	}
 
+	/**
+	 * Liest Bild von SD
+	 * 
+	 * @param name
+	 *            Bildname
+	 * @param image_pixel_size
+	 *            Bildgröße
+	 * @return Bild
+	 * @throws CustomException
+	 */
 	private synchronized Bitmap readImage(String name, int image_pixel_size)
 			throws CustomException {
 
@@ -492,9 +663,25 @@ public class MensaService extends Service {
 		return image;
 	}
 
+	/**
+	 * Speichert ob XMl Datei gerade in bearbeitung
+	 */
 	private String inWork_XML_working = "";
+
+	/**
+	 * Speichert Status der XML Dateien
+	 */
 	private String inWork_XML_status = "";
 
+	/**
+	 * Setzt XML Datei auf 'working'
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 */
 	private void inWork_XML_set_working(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_working) {
@@ -504,6 +691,15 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Entfernt XML als 'working'
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 */
 	private void inWork_XML_remove_working(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_working) {
@@ -512,6 +708,15 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Setzt XML als 'working' wenn noch nicht geschehen
+	 * 
+	 * @param mensa
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @return True wenn XML noch nicht vorher als 'working' markiert
+	 */
 	private boolean inWork_XML_start_working(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_working) {
@@ -525,6 +730,15 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Setzt XML als 'ready'
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 */
 	private void inWork_XML_set_ready(String mensa, int Year, int Month, int Day) {
 		synchronized (inWork_XML_status) {
 			if (inWork_XML_is_ready(mensa, Year, Month, Day))
@@ -536,6 +750,15 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Setzt XML als 'updated'
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 */
 	private void inWork_XML_set_updated(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_status) {
@@ -548,6 +771,15 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Entfernt Status von XML
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 */
 	private void inWork_XML_remove_status(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_status) {
@@ -559,6 +791,16 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Checkt ob XML als 'updated' markiert
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @return True wenn XML als 'updated' markiert
+	 */
 	private boolean inWork_XML_is_updated(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_status) {
@@ -571,6 +813,16 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Checkt ob XML als 'ready' markiert
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @return True wenn XL als 'ready' markiert
+	 */
 	private boolean inWork_XML_is_ready(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_status) {
@@ -583,6 +835,23 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Prüft ob Datei vorhanden, wenn nicht wird sie aus Netz geladen
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param inYear
+	 * @param inMonth
+	 * @param inDay
+	 * @param updateNow
+	 *            Wenn True wird die Datei aktualisiert (auch wenn schon
+	 *            vorhanden)
+	 * @param isExistingCheck
+	 *            Wenn True wird keine aktualisierung vorgenommen sondern nur
+	 *            die existenz geprüft (überschreibt updateNow)
+	 * @return
+	 * @throws CustomException
+	 */
 	private status prepareXML(String mensa, int inYear, int inMonth, int inDay,
 			boolean updateNow, boolean isExistingCheck) throws CustomException {
 
@@ -621,6 +890,16 @@ public class MensaService extends Service {
 		return status.working;
 	}
 
+	/**
+	 * Liefert XML des in der App aktellen Datums (Berechnets Datum)
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param isExistingCheck
+	 *            True unterdrückt aktualisierung, prüft nur existens
+	 * @return nodelist
+	 * @throws CustomException
+	 */
 	public NodeList getXML(String mensa, boolean isExistingCheck)
 			throws CustomException {
 
@@ -628,6 +907,19 @@ public class MensaService extends Service {
 
 	}
 
+	/**
+	 * Liefert XML für ein bestimmtes Datum
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @param isExistingCheck
+	 *            Wenn True aktualisieren unterdrücken
+	 * @return nodelist
+	 * @throws CustomException
+	 */
 	public NodeList getXML(String mensa, int Year, int Month, int Day,
 			boolean isExistingCheck) throws CustomException {
 
@@ -637,6 +929,22 @@ public class MensaService extends Service {
 
 	}
 
+	/**
+	 * Prüft ob Datei vorhanden (für aktuelles App Datum), wenn nicht wird sie
+	 * aus Netz gelden. Dabei wird gewartet das ein Slot zur bearbeitung frei
+	 * wird
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param updateNow
+	 *            Wenn True wird die Datei aktualisiert (auch wenn schon
+	 *            vorhanden)
+	 * @param isExistingCheck
+	 *            Wenn True wird keine aktualisierung durchgeführt, sonern nur
+	 *            auf existenz überprüft (überschreibt updateNow)
+	 * @return status
+	 * @throws CustomException
+	 */
 	public status getXML_status(String mensa, boolean updateNow,
 			boolean isExistingCheck) throws CustomException {
 
@@ -644,6 +952,25 @@ public class MensaService extends Service {
 				isExistingCheck);
 	}
 
+	/**
+	 * Prüft ob Datei vorhanden (für Datum von prameter), wenn nicht wird sie
+	 * aus Netz geladen. Dabei wird gewartet das ein Slot zur bearbeitung frei
+	 * wird
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @param updateNow
+	 *            Wenn True wird die Datei aktualisiert (auch wenn schon
+	 *            vorhanden)
+	 * @param isExistingCheck
+	 *            Wenn True wird keine aktualisierung vorgenommen sondern nur
+	 *            die existenz geprüft (überschreibt updateNow)
+	 * @return status
+	 * @throws CustomException
+	 */
 	public status getXML_status(String mensa, int Year, int Month, int Day,
 			boolean updateNow, boolean isExistingCheck) throws CustomException {
 		status stat = null;
@@ -666,6 +993,17 @@ public class MensaService extends Service {
 
 	}
 
+	/**
+	 * Lädt XML und speichert auf SD
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @return True wenn speichern ohne fehler
+	 * @throws CustomException
+	 */
 	private boolean loadXMLtoSD(String mensa, int Year, int Month, int Day)
 			throws CustomException {
 		if (mensa == "st")
@@ -731,12 +1069,32 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Prüft ob XML Datei vorhanden
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @return True wenn XML Datei vorhanden
+	 */
 	private synchronized boolean fileExists_XML(String mensa, int Year,
 			int Month, int Day) {
 
 		return (new File(getFilename_XML(mensa, Year, Month, Day))).exists();
 	}
 
+	/**
+	 * Erzeugt den Speicher-Dateinamen für XML Datei
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @return Dateiname
+	 */
 	private String getFilename_XML(String mensa, int Year, int Month, int Day) {
 		String string = root.toString() + "/essenprev_" + nf2.format(Year)
 				+ "_" + nf.format(Month) + "_" + nf.format(Day) + "_" + mensa
@@ -747,6 +1105,18 @@ public class MensaService extends Service {
 
 	private Object FileSync = new Object();
 
+	/**
+	 * Speichert data als XMl Datei auf SD
+	 * 
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @param mensa
+	 *            rh oder st
+	 * @param data
+	 *            zu Speichernder Dateiinhalt
+	 * @throws CustomException
+	 */
 	private void SaveXML(int Year, int Month, int Day, String mensa, String data)
 			throws CustomException {
 		synchronized (FileSync) {
@@ -812,6 +1182,9 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Legt Mensa App Verzeichnis auf SD Karte an
+	 */
 	private void CreateDir() {
 
 		root.mkdir();
@@ -825,6 +1198,14 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Liest Essen aus XML Datei
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @return nodelist
+	 * @throws CustomException
+	 */
 	public NodeList loadXMLintoRuntime(String mensa) throws CustomException {
 
 		Document doc = readXML(mensa, mYear, mMonth, mDay);
@@ -833,6 +1214,17 @@ public class MensaService extends Service {
 
 	}
 
+	/**
+	 * Liest Essen aus XML Datei für bestimmtes Datum
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @return nodelist
+	 * @throws CustomException
+	 */
 	public NodeList loadXMLintoRuntime(String mensa, int Year, int Month,
 			int Day) throws CustomException {
 
@@ -842,6 +1234,17 @@ public class MensaService extends Service {
 
 	}
 
+	/**
+	 * Liest XML Datei von SD
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @return xml document
+	 * @throws CustomException
+	 */
 	public Document readXML(String mensa, int Year, int Month, int Day)
 			throws CustomException {
 		synchronized (FileSync) {
@@ -875,6 +1278,17 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Liest XML Datei von SD
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @return XML als String
+	 * @throws CustomException
+	 */
 	public String readXMLs(String mensa, int Year, int Month, int Day)
 			throws CustomException {
 		synchronized (FileSync) {
@@ -901,6 +1315,9 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Löscht Bilder und Essenslisten die veraltet sind aus dem Speicher
+	 */
 	public void del_oldpic() {
 
 		// Kann in nachfolgenden Versionen wieder weg
@@ -1011,6 +1428,12 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 * @return true wenn daten aktualisert
+	 */
 	public boolean LoadAllXML(String mensa) {
 		Calendar cal = new GregorianCalendar(mYear, mMonth - 1, mDay);
 		boolean stat = false;
@@ -1044,6 +1467,13 @@ public class MensaService extends Service {
 		return stat;
 	}
 
+	/**
+	 * Lässt prüfen ob alle Datein vorhanden sind (Das Ergebnis landet dabei im
+	 * program, und hällt im ram Datei status vor)
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 */
 	public void checkAllXML(String mensa) {
 		Calendar cal = new GregorianCalendar(mYear, mMonth - 1, mDay);
 

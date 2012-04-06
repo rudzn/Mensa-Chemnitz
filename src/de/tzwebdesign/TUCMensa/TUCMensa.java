@@ -235,6 +235,10 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		ListViewShowed = true;
 	}
 
+	/**
+	 * Lädt Essen aus Speicher wenn verfügbar und startet danach eine
+	 * aktualisierung (ansonsten gleich aus Netz geladen)
+	 */
 	private void ladeService() {
 
 		Thread t = new Thread() {
@@ -301,6 +305,12 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		}
 	}
 
+	/**
+	 * Lädt in einem Thread das für die UI benötigte Bild asyncron
+	 * 
+	 * @param value
+	 *            Bildname
+	 */
 	private void pullImage(String value) {
 
 		final String name = value;
@@ -336,6 +346,10 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 	}
 
+	/**
+	 * Startet einen Thread der im Hintergrund restliche benötige Bilder
+	 * vorbereitet/runterlädt
+	 */
 	private void prepareAllImages() {
 		if (!imageloading)
 			return;
@@ -521,6 +535,9 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 	}
 
+	/**
+	 * Erzeugt das Menü für den Menübutton
+	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 0, 0, R.string.Konfiguration);
 		menu.add(0, 1, 0, R.string.Listenansicht);
@@ -528,6 +545,9 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		return true;
 	}
 
+	/**
+	 * Verarbeitet den Klick auf Menüelemente
+	 */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case 0:
@@ -560,6 +580,9 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		return false;
 	}
 
+	/**
+	 * Ändert das angezeigte Bild im UI
+	 */
 	private synchronized void PushImageIn() {
 
 		Bitmap image_temo = getimage();
@@ -573,6 +596,9 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 	}
 
+	/**
+	 * Lädt Essensdaten&Bild ins UI
+	 */
 	private synchronized void refresh() {
 
 		NodeList nodes_temp = getNodes();
@@ -631,6 +657,9 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		}
 	}
 
+	/**
+	 * Gibt einen Error im UI aus
+	 */
 	private synchronized void PushError() {
 		TextView TextView04 = (TextView) findViewById(R.id.TextView04);
 
@@ -642,6 +671,9 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		backwardnow();
 	}
 
+	/**
+	 * Wechselt zum vorherigen Essen
+	 */
 	public void backwardnow() {
 
 		NodeList nodes_temp = getNodes();
@@ -659,6 +691,9 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		forwardnow();
 	}
 
+	/**
+	 * Wechselt zum nächsten Essen
+	 */
 	private void forwardnow() {
 
 		NodeList nodes_temp = getNodes();
@@ -670,6 +705,9 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 	}
 
+	/**
+	 * Startet die Konfiguration Activity
+	 */
 	private void config() {
 		config_update = true;
 		Intent it = new Intent(this, Preferences.class);
