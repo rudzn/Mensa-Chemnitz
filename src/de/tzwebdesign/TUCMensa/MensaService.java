@@ -81,6 +81,7 @@ public class MensaService extends Service {
 		}
 
 		mYear = c.get(Calendar.YEAR);
+		// +1 Weil Java bei Monaten von 0 bis 11 zählt
 		mMonth = c.get(Calendar.MONTH) + 1;
 		mDay = c.get(Calendar.DAY_OF_MONTH);
 	}
@@ -110,6 +111,7 @@ public class MensaService extends Service {
 		}
 		if (mYear != c.get(Calendar.YEAR))
 			return true;
+		// +1 weil Java bei Monaten von 0 bis 11 zählt
 		if (mMonth != (c.get(Calendar.MONTH) + 1))
 			return true;
 		if (mDay != c.get(Calendar.DAY_OF_MONTH))
@@ -200,10 +202,12 @@ public class MensaService extends Service {
 	private final File root = new File(Environment
 			.getExternalStorageDirectory().toString() + "/TUCMensa");
 
+	// TODO lieber jedesmal vor speicher verwendung checken, statt hier nur bei
+	// Service-Start Status zu entnehmen?
 	private String storage_state = Environment.getExternalStorageState();
 
-	private NumberFormat nf = NumberFormat.getInstance();
-	private NumberFormat nf2 = NumberFormat.getInstance();
+	private NumberFormat twoDigitsNumberformat = NumberFormat.getInstance();
+	private NumberFormat fourDigitsNumberformat = NumberFormat.getInstance();
 
 	/**
 	 * status den eine Datei haben kann
@@ -217,13 +221,17 @@ public class MensaService extends Service {
 	 * Konstruktor
 	 */
 	public MensaService() {
-		nf.setMinimumIntegerDigits(2); // The minimum Digits required is 2
-		nf.setMaximumIntegerDigits(2); // The maximum Digits required is 2
-		nf.setGroupingUsed(false);
+		twoDigitsNumberformat.setMinimumIntegerDigits(2); // The minimum Digits
+															// required is 2
+		twoDigitsNumberformat.setMaximumIntegerDigits(2); // The maximum Digits
+															// required is 2
+		twoDigitsNumberformat.setGroupingUsed(false);
 
-		nf2.setMinimumIntegerDigits(4); // The minimum Digits required is 4
-		nf2.setMaximumIntegerDigits(4); // The maximum Digits required is 4
-		nf2.setGroupingUsed(false);
+		fourDigitsNumberformat.setMinimumIntegerDigits(4); // The minimum Digits
+															// required is 4
+		fourDigitsNumberformat.setMaximumIntegerDigits(4); // The maximum Digits
+															// required is 4
+		fourDigitsNumberformat.setGroupingUsed(false);
 
 	}
 
@@ -402,8 +410,10 @@ public class MensaService extends Service {
 			boolean isExistingCheck, int image_pixel_size)
 			throws CustomException {
 
-		String imgName_4 = nf2.format(Integer.parseInt(imgName)) + "_"
-				+ nf2.format(image_pixel_size);
+		String imgName_4 = fourDigitsNumberformat.format(Integer
+				.parseInt(imgName))
+				+ "_"
+				+ fourDigitsNumberformat.format(image_pixel_size);
 
 		if (inWork_Image_is_updated(imgName_4))
 			return status.Updated;
@@ -504,10 +514,12 @@ public class MensaService extends Service {
 	 */
 	private String getFilename_Image(String name, int image_pixel_size) {
 
-		String string = root.toString() + "/essenprev_" + nf2.format(mYear)
-				+ "_" + nf.format(mMonth) + "_" + nf.format(mDay) + "-"
-				+ nf2.format(Integer.parseInt(name)) + "_"
-				+ nf2.format(image_pixel_size) + ".png";
+		String string = root.toString() + "/essenprev_"
+				+ fourDigitsNumberformat.format(mYear) + "_"
+				+ twoDigitsNumberformat.format(mMonth) + "_"
+				+ twoDigitsNumberformat.format(mDay) + "-"
+				+ fourDigitsNumberformat.format(Integer.parseInt(name)) + "_"
+				+ fourDigitsNumberformat.format(image_pixel_size) + ".png";
 		return string;
 
 	}
@@ -1096,9 +1108,10 @@ public class MensaService extends Service {
 	 * @return Dateiname
 	 */
 	private String getFilename_XML(String mensa, int Year, int Month, int Day) {
-		String string = root.toString() + "/essenprev_" + nf2.format(Year)
-				+ "_" + nf.format(Month) + "_" + nf.format(Day) + "_" + mensa
-				+ ".xml";
+		String string = root.toString() + "/essenprev_"
+				+ fourDigitsNumberformat.format(Year) + "_"
+				+ twoDigitsNumberformat.format(Month) + "_"
+				+ twoDigitsNumberformat.format(Day) + "_" + mensa + ".xml";
 		return string;
 
 	}

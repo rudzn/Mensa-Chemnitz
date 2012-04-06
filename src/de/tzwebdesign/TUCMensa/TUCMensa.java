@@ -100,15 +100,32 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		}
 	}
 
+	/**
+	 * Speichert die derzeit angezeigten Essen
+	 */
 	private NodeList nodes;
+
+	/**
+	 * Semaphor damit Nodelist nicht gleochzeitig geschrieben und gelesen wird
+	 */
 	private Object lock1 = new Object();
 
+	/**
+	 * Speichert die aktuelle essensliste auf nodes
+	 * 
+	 * @param name
+	 */
 	private void setNodes(NodeList name) {
 		synchronized (lock1) {
 			nodes = name;
 		}
 	}
 
+	/**
+	 * liest die lokale nodeliste von nodes
+	 * 
+	 * @return
+	 */
 	private NodeList getNodes() {
 		synchronized (lock1) {
 			return nodes;
@@ -122,9 +139,12 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	private boolean config_update = true;
 	private boolean ListViewFirst = false;
 
-	private NumberFormat nf = NumberFormat.getInstance();
-	private NumberFormat nf2 = NumberFormat.getInstance();
+	private NumberFormat twoDigitsNumberformat = NumberFormat.getInstance();
+	private NumberFormat fourDigitsNumberformat = NumberFormat.getInstance();
 
+	/**
+	 * Position des aktuellen Essens
+	 */
 	Integer essen_position = 0;
 
 	private Bitmap image = null;
@@ -143,13 +163,17 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 		setContentView(R.layout.main);
 
-		nf.setMinimumIntegerDigits(2); // The minimum Digits required is 2
-		nf.setMaximumIntegerDigits(2); // The maximum Digits required is 2
-		nf.setGroupingUsed(false);
+		twoDigitsNumberformat.setMinimumIntegerDigits(2); // The minimum Digits
+															// required is 2
+		twoDigitsNumberformat.setMaximumIntegerDigits(2); // The maximum Digits
+															// required is 2
+		twoDigitsNumberformat.setGroupingUsed(false);
 
-		nf2.setMinimumIntegerDigits(4); // The minimum Digits required is 4
-		nf2.setMaximumIntegerDigits(4); // The maximum Digits required is 4
-		nf2.setGroupingUsed(false);
+		fourDigitsNumberformat.setMinimumIntegerDigits(4); // The minimum Digits
+															// required is 4
+		fourDigitsNumberformat.setMaximumIntegerDigits(4); // The maximum Digits
+															// required is 4
+		fourDigitsNumberformat.setGroupingUsed(false);
 		// Toast.makeText(TUCMensa.this,
 		// "local_service_disconnected",Toast.LENGTH_LONG).show();
 
@@ -282,16 +306,39 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 	}
 
+	/**
+	 * Semaphor damit nur UI oder Service auf Bildobjekt schreibt/liest aber
+	 * nicht gleichzeitig
+	 */
 	private Object lock2 = new Object();
 
+	/**
+	 * Name des Bildes, wenn schnell geblättert wird, und die Threads vom
+	 * Bildladen zurückkehren, soll nur das zuletzt gesuchte Bild noch
+	 * gespeichert werden Ansonsten Flackern die Bilder in wilder reihenfolge
+	 * vorm Nutzer, und am ende bleibt beliebig eins stehen.
+	 */
 	private String imageState;
 
+	/**
+	 * Gibt Bildzurück was Service in image zwischengespeichert hat
+	 * 
+	 * @return Bild
+	 */
 	private Bitmap getimage() {
 		synchronized (lock2) {
 			return image;
 		}
 	}
 
+	/**
+	 * Service speichert hier auf image das geholte Bild ab
+	 * 
+	 * @param name
+	 *            Bildname
+	 * @param bm
+	 *            Bild
+	 */
 	private void setimage(String name, Bitmap bm) {
 		synchronized (lock2) {
 			if (imageState == name)
@@ -299,6 +346,12 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		}
 	}
 
+	/**
+	 * Setzt Bild auf Null
+	 * 
+	 * @param name
+	 *            Bildname
+	 */
 	private void setimageState(String name) {
 		synchronized (lock2) {
 			imageState = name;
@@ -481,6 +534,9 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 	}
 
+	/**
+	 * Lädt Einstellungen
+	 */
 	private void get_pref() {
 		SharedPreferences settings = PreferenceManager
 				.getDefaultSharedPreferences(this);
@@ -606,13 +662,19 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 		TextView TextView_Data = (TextView) findViewById(R.id.TextView04);
 		if (sprache.equals("de")) {
-			TextView_Data.setText(nf.format(IOinstance.getmDay()) + "."
-					+ nf.format(IOinstance.getmMonth()) + "."
-					+ nf2.format(IOinstance.getmYear()));
+			TextView_Data.setText(twoDigitsNumberformat.format(IOinstance
+					.getmDay())
+					+ "."
+					+ twoDigitsNumberformat.format(IOinstance.getmMonth())
+					+ "."
+					+ fourDigitsNumberformat.format(IOinstance.getmYear()));
 		} else {
-			TextView_Data.setText(nf.format(IOinstance.getmMonth()) + "."
-					+ nf.format(IOinstance.getmDay()) + "."
-					+ nf2.format(IOinstance.getmYear()));
+			TextView_Data.setText(twoDigitsNumberformat.format(IOinstance
+					.getmMonth())
+					+ "."
+					+ twoDigitsNumberformat.format(IOinstance.getmDay())
+					+ "."
+					+ fourDigitsNumberformat.format(IOinstance.getmYear()));
 		}
 		// ////////////
 
