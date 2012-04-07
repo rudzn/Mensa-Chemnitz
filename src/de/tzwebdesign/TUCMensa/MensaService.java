@@ -682,30 +682,6 @@ public class MensaService extends Service {
 	 */
 	private List<String> inWork_XML_working = new ArrayList<String>();
 
-	
-	
-	
-	
-	
-	private enum filestatus {
-		ready, updated
-	};
-	
-	private class inWork_XML_status_intern {
-	    public String file;
-	    public filestatus status;
-	    //constructor
-	    public inWork_XML_status_intern(String fileIn, filestatus statusIn) {
-	        file = fileIn;
-	        status = statusIn;
-	    }
-	}
-
-	/**
-	 * Speichert Status der XML Dateien
-	 */
-	private List<inWork_XML_status_intern> inWork_XML_status = new ArrayList<inWork_XML_status_intern>();
-
 	/**
 	 * Setzt XML Datei auf 'working'
 	 * 
@@ -718,7 +694,9 @@ public class MensaService extends Service {
 	private void inWork_XML_set_working(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_working) {
-			inWork_XML_working.add((new Integer(Year)).toString() +  (new Integer(Month)).toString() +  (new Integer(Day)).toString() + mensa);
+			inWork_XML_working.add((new Integer(Year)).toString()
+					+ (new Integer(Month)).toString()
+					+ (new Integer(Day)).toString() + mensa);
 
 		}
 	}
@@ -735,7 +713,9 @@ public class MensaService extends Service {
 	private void inWork_XML_remove_working(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_working) {
-			inWork_XML_working.remove((new Integer(Year)).toString() +  (new Integer(Month)).toString() +  (new Integer(Day)).toString() + mensa);
+			inWork_XML_working.remove((new Integer(Year)).toString()
+					+ (new Integer(Month)).toString()
+					+ (new Integer(Day)).toString() + mensa);
 		}
 	}
 
@@ -751,7 +731,9 @@ public class MensaService extends Service {
 	private boolean inWork_XML_start_working(String mensa, int Year, int Month,
 			int Day) {
 		synchronized (inWork_XML_working) {
-			if (!inWork_XML_working.contains((new Integer(Year)).toString() +  (new Integer(Month)).toString() +  (new Integer(Day)).toString() + mensa)) {
+			if (!inWork_XML_working.contains((new Integer(Year)).toString()
+					+ (new Integer(Month)).toString()
+					+ (new Integer(Day)).toString() + mensa)) {
 				inWork_XML_set_working(mensa, Year, Month, Day);
 				return true;
 			}
@@ -759,6 +741,80 @@ public class MensaService extends Service {
 			return false;
 		}
 	}
+
+	private enum filestatus {
+		ready, updated
+	};
+
+	private class inWork_XML_status_intern {
+		public String file;
+		public filestatus status;
+
+		// constructor
+		public inWork_XML_status_intern(String fileIn, filestatus statusIn) {
+			file = fileIn;
+			status = statusIn;
+		}
+	}
+
+	/**
+	 * Speichert Status der XML Dateien
+	 */
+	private class inWork_XML_status {
+
+		private List<inWork_XML_status_intern> inWork_XML_status = new ArrayList<inWork_XML_status_intern>();
+
+		synchronized public void add(String fileIn, filestatus statusIn) {
+			inWork_XML_status
+					.add(new inWork_XML_status_intern(fileIn, statusIn));
+
+		}
+
+		synchronized public Boolean contains(String fileIn, filestatus statusIn) {
+			for (inWork_XML_status_intern item : inWork_XML_status) {
+				if (item.file == fileIn && item.status == statusIn)
+					return true;
+			}
+			return false;
+		}
+
+		synchronized public Boolean isReady(String fileIn) {
+			for (inWork_XML_status_intern item : inWork_XML_status) {
+				if (item.file == fileIn && item.status == filestatus.ready)
+					return true;
+			}
+			return false;
+		}
+
+		synchronized public Boolean isUpdated(String fileIn) {
+			for (inWork_XML_status_intern item : inWork_XML_status) {
+				if (item.file == fileIn && item.status == filestatus.updated)
+					return true;
+			}
+			return false;
+		}
+
+		synchronized public void remove(String fileIn) {
+			for (inWork_XML_status_intern item : inWork_XML_status) {
+				if (item.file == fileIn)
+					inWork_XML_status.remove(item);
+			}
+		}
+
+		synchronized public void setready(String fileIn) {
+			remove(fileIn);
+
+			add(fileIn, filestatus.ready);
+		}
+
+		synchronized public void setupdated(String fileIn) {
+			remove(fileIn);
+
+			add(fileIn, filestatus.updated);
+		}
+	}
+
+	private inWork_XML_status inWork_XML_status_objekt = new inWork_XML_status();
 
 	/**
 	 * Setzt XML als 'ready'
@@ -770,12 +826,9 @@ public class MensaService extends Service {
 	 * @param Day
 	 */
 	private void inWork_XML_set_ready(String mensa, int Year, int Month, int Day) {
-		synchronized (inWork_XML_status) {
-			if (inWork_XML_is_ready(mensa, Year, Month, Day))
-				inWork_XML_status.remove(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.updated));
-			else
-				inWork_XML_status.add(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.ready));
-		}
+
+		inWork_XML_status_objekt.setready("" + Year + Month + Day + mensa);
+
 	}
 
 	/**
@@ -789,12 +842,7 @@ public class MensaService extends Service {
 	 */
 	private void inWork_XML_set_updated(String mensa, int Year, int Month,
 			int Day) {
-		synchronized (inWork_XML_status) {
-			if (inWork_XML_is_ready(mensa, Year, Month, Day))
-				inWork_XML_status.remove(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.ready));
-			else
-				inWork_XML_status.add(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.updated));
-		}
+		inWork_XML_status_objekt.setupdated("" + Year + Month + Day + mensa);
 	}
 
 	/**
@@ -808,10 +856,9 @@ public class MensaService extends Service {
 	 */
 	private void inWork_XML_remove_status(String mensa, int Year, int Month,
 			int Day) {
-		synchronized (inWork_XML_status) {
-			inWork_XML_status.add(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.ready));
-			inWork_XML_status.add(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.updated));
-		}
+
+		inWork_XML_status_objekt.remove("" + Year + Month + Day + mensa);
+
 	}
 
 	/**
@@ -826,13 +873,13 @@ public class MensaService extends Service {
 	 */
 	private boolean inWork_XML_is_updated(String mensa, int Year, int Month,
 			int Day) {
-		synchronized (inWork_XML_status) {
-			if (inWork_XML_status.contains(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.updated))) {
-				return true;
-			}
 
-			return false;
+		if (inWork_XML_status_objekt.isUpdated("" + Year + Month + Day + mensa)) {
+			return true;
 		}
+
+		return false;
+
 	}
 
 	/**
@@ -847,13 +894,13 @@ public class MensaService extends Service {
 	 */
 	private boolean inWork_XML_is_ready(String mensa, int Year, int Month,
 			int Day) {
-		synchronized (inWork_XML_status) {
-			if (inWork_XML_status.contains(new inWork_XML_status_intern("" + Year + Month + Day + mensa, filestatus.ready))) {
-				return true;
-			}
 
-			return false;
+		if (inWork_XML_status_objekt.isReady("" + Year + Month + Day + mensa)) {
+			return true;
 		}
+
+		return false;
+
 	}
 
 	/**
