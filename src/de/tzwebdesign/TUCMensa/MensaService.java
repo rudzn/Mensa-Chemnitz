@@ -243,11 +243,6 @@ public class MensaService extends Service {
 	private List<String> inWork_Image_working = new ArrayList<String>();
 
 	/**
-	 * Speichert den Status der Bilder
-	 */
-	private String inWork_Image_status = "";
-
-	/**
 	 * löscht das Bild wieder aus 'in arbeit'
 	 * 
 	 * @param name
