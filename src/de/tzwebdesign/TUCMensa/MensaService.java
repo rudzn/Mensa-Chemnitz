@@ -240,7 +240,7 @@ public class MensaService extends Service {
 	/**
 	 * Speichert die gerade in arbeit befindlichen Bilder
 	 */
-	private String inWork_Image_working = "";
+	private List<String> inWork_Image_working = new ArrayList<String>();
 
 	/**
 	 * Speichert den Status der Bilder
@@ -248,29 +248,14 @@ public class MensaService extends Service {
 	private String inWork_Image_status = "";
 
 	/**
-	 * Markiert das Bild als 'in arbeit'
-	 * 
-	 * @param name
-	 *            Bildname
-	 */
-	private void inWork_Image_set_working(String name) {
-		synchronized (inWork_Image_working) {
-
-			inWork_Image_working += "|" + name + "|";
-
-		}
-	}
-
-	/**
 	 * löscht das Bild wieder aus 'in arbeit'
 	 * 
 	 * @param name
 	 *            Bildname
 	 */
-	private void inWork_Image_remove_working(String name) {
+	private void inWork_Image_remove_working(String name, Integer imageSize) {
 		synchronized (inWork_Image_working) {
-			inWork_Image_working = inWork_Image_working.replace("|" + name
-					+ "|", "");
+			inWork_Image_working.remove(name + "_" + imageSize);
 		}
 	}
 
@@ -281,10 +266,10 @@ public class MensaService extends Service {
 	 *            Bildname
 	 * @return True wenn 'in arbeit' gesetzt wurde, False wenn schon 'in arbeit'
 	 */
-	private boolean inWork_Image_start_working(String name) {
+	private boolean inWork_Image_start_working(String name, Integer imageSize) {
 		synchronized (inWork_Image_working) {
-			if (!inWork_Image_working.contains("|" + name + "|")) {
-				inWork_Image_set_working(name);
+			if (!inWork_Image_working.contains(name)) {
+				inWork_Image_working.add(name + "_" + imageSize);
 				return true;
 			}
 
@@ -293,86 +278,9 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Bild als ready markieren
-	 * 
-	 * @param name
-	 *            Bildname
+	 * Image file Status Objekt
 	 */
-	private void inWork_Image_set_ready(String name) {
-		synchronized (inWork_Image_status) {
-			if (inWork_Image_is_ready(name))
-				inWork_Image_status = inWork_Image_status.replace("|" + name
-						+ "u|", "|" + name + "r|");
-			else
-				inWork_Image_status += "|" + name + "r|";
-		}
-	}
-
-	/**
-	 * Bild als updated markieren
-	 * 
-	 * @param name
-	 *            Bildname
-	 */
-	private void inWork_Image_set_updated(String name) {
-		synchronized (inWork_Image_status) {
-			if (inWork_Image_is_ready(name))
-				inWork_Image_status = inWork_Image_status.replace("|" + name
-						+ "r|", "|" + name + "u|");
-			else
-				inWork_Image_status += "|" + name + "u|";
-		}
-	}
-
-	/**
-	 * Entfernt den Status des Bildes
-	 * 
-	 * @param name
-	 *            Bildname
-	 */
-	private void inWork_Image_remove_status(String name) {
-		synchronized (inWork_Image_status) {
-			inWork_Image_status = inWork_Image_status.replace(
-					"|" + name + "r|", "");
-			inWork_Image_status = inWork_Image_status.replace(
-					"|" + name + "u|", "");
-
-		}
-	}
-
-	/**
-	 * Prüft Bildstatus auf 'updated'
-	 * 
-	 * @param name
-	 *            Bildname
-	 * @return True wenn Bildstatus 'updated'
-	 */
-	private boolean inWork_Image_is_updated(String name) {
-		synchronized (inWork_Image_status) {
-			if (inWork_Image_status.contains("|" + name + "u|")) {
-				return true;
-			}
-
-			return false;
-		}
-	}
-
-	/**
-	 * Prüft Bildstatus auf 'ready'
-	 * 
-	 * @param name
-	 *            Bildname
-	 * @return True wenn Bildstatus 'ready'
-	 */
-	private boolean inWork_Image_is_ready(String name) {
-		synchronized (inWork_Image_status) {
-			if (inWork_Image_status.contains("|" + name + "r|")) {
-				return true;
-			}
-
-			return false;
-		}
-	}
+	private FileStatusManagement imagefileStatusObject = new FileStatusManagement();
 
 	/**
 	 * Liefert Bild
@@ -417,36 +325,36 @@ public class MensaService extends Service {
 				+ "_"
 				+ fourDigitsNumberformat.format(image_pixel_size);
 
-		if (inWork_Image_is_updated(imgName_4))
+		if (imagefileStatusObject.isUpdated(imgName_4))
 			return status.Updated;
 
-		if (inWork_Image_is_ready(imgName_4) && !updateNow)
+		if (imagefileStatusObject.isReady(imgName_4) && !updateNow)
 			return status.Existing;
 
-		if (inWork_Image_start_working(imgName_4)) {
+		if (inWork_Image_start_working(imgName_4, image_pixel_size)) {
 
 			if (!fileExists_Image(imgName, image_pixel_size) || updateNow) {
 				if (isExistingCheck) {
-					inWork_Image_remove_working(imgName_4);
+					inWork_Image_remove_working(imgName_4, image_pixel_size);
 					return status.nonExisting;
 				}
 
 				try {
 					Boolean stat = loadIMAGEtoSD(imgName, image_pixel_size);
-					inWork_Image_set_updated(imgName_4);
-					inWork_Image_remove_working(imgName_4);
+					imagefileStatusObject.setupdated(imgName_4);
+					inWork_Image_remove_working(imgName_4, image_pixel_size);
 					if (stat)
 						return status.nowUpdated;
 					else
 						return status.nonUpdated;
 
 				} catch (CustomException e) {
-					inWork_Image_remove_working(imgName_4);
+					inWork_Image_remove_working(imgName_4, image_pixel_size);
 					throw e;
 				}
 			}
-			inWork_Image_set_ready(imgName_4);
-			inWork_Image_remove_working(imgName_4);
+			imagefileStatusObject.setready(imgName_4);
+			inWork_Image_remove_working(imgName_4, image_pixel_size);
 			return status.Existing;
 		}
 		return status.working;
@@ -746,58 +654,59 @@ public class MensaService extends Service {
 		ready, updated
 	};
 
-	private class inWork_XML_status_intern {
-		public String file;
-		public filestatus status;
-
-		// constructor
-		public inWork_XML_status_intern(String fileIn, filestatus statusIn) {
-			file = fileIn;
-			status = statusIn;
-		}
-	}
-
 	/**
-	 * Speichert Status der XML Dateien
+	 * Klasse zur Filestatus speicherung
 	 */
-	private class inWork_XML_status {
+	private class FileStatusManagement {
 
-		private List<inWork_XML_status_intern> inWork_XML_status = new ArrayList<inWork_XML_status_intern>();
+		private class InternalObject {
+			public String file;
+			public filestatus status;
+
+			// constructor
+			public InternalObject(String fileIn, filestatus statusIn) {
+				file = fileIn;
+				status = statusIn;
+			}
+		}
+
+		private List<InternalObject> statusList = new ArrayList<InternalObject>();
 
 		synchronized public void add(String fileIn, filestatus statusIn) {
-			inWork_XML_status
-					.add(new inWork_XML_status_intern(fileIn, statusIn));
+			statusList.add(new InternalObject(fileIn, statusIn));
 
 		}
 
 		synchronized public Boolean contains(String fileIn, filestatus statusIn) {
-			for (inWork_XML_status_intern item : inWork_XML_status) {
-				if (item.file == fileIn && item.status == statusIn)
+			for (InternalObject item : statusList) {
+				if (item.file.equals(fileIn) && item.status.equals(statusIn))
 					return true;
 			}
 			return false;
 		}
 
 		synchronized public Boolean isReady(String fileIn) {
-			for (inWork_XML_status_intern item : inWork_XML_status) {
-				if (item.file == fileIn && item.status == filestatus.ready)
+			for (InternalObject item : statusList) {
+				if (item.file.equals(fileIn)
+						&& item.status.equals(filestatus.ready))
 					return true;
 			}
 			return false;
 		}
 
 		synchronized public Boolean isUpdated(String fileIn) {
-			for (inWork_XML_status_intern item : inWork_XML_status) {
-				if (item.file == fileIn && item.status == filestatus.updated)
+			for (InternalObject item : statusList) {
+				if (item.file.equals(fileIn)
+						&& item.status.equals(filestatus.updated))
 					return true;
 			}
 			return false;
 		}
 
 		synchronized public void remove(String fileIn) {
-			for (inWork_XML_status_intern item : inWork_XML_status) {
-				if (item.file == fileIn)
-					inWork_XML_status.remove(item);
+			for (InternalObject item : statusList) {
+				if (item.file.equals(fileIn))
+					statusList.remove(item);
 			}
 		}
 
@@ -814,94 +723,10 @@ public class MensaService extends Service {
 		}
 	}
 
-	private inWork_XML_status inWork_XML_status_objekt = new inWork_XML_status();
-
 	/**
-	 * Setzt XML als 'ready'
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
+	 * XML file Status Objekt
 	 */
-	private void inWork_XML_set_ready(String mensa, int Year, int Month, int Day) {
-
-		inWork_XML_status_objekt.setready("" + Year + Month + Day + mensa);
-
-	}
-
-	/**
-	 * Setzt XML als 'updated'
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 */
-	private void inWork_XML_set_updated(String mensa, int Year, int Month,
-			int Day) {
-		inWork_XML_status_objekt.setupdated("" + Year + Month + Day + mensa);
-	}
-
-	/**
-	 * Entfernt Status von XML
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 */
-	private void inWork_XML_remove_status(String mensa, int Year, int Month,
-			int Day) {
-
-		inWork_XML_status_objekt.remove("" + Year + Month + Day + mensa);
-
-	}
-
-	/**
-	 * Checkt ob XML als 'updated' markiert
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 * @return True wenn XML als 'updated' markiert
-	 */
-	private boolean inWork_XML_is_updated(String mensa, int Year, int Month,
-			int Day) {
-
-		if (inWork_XML_status_objekt.isUpdated("" + Year + Month + Day + mensa)) {
-			return true;
-		}
-
-		return false;
-
-	}
-
-	/**
-	 * Checkt ob XML als 'ready' markiert
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 * @return True wenn XL als 'ready' markiert
-	 */
-	private boolean inWork_XML_is_ready(String mensa, int Year, int Month,
-			int Day) {
-
-		if (inWork_XML_status_objekt.isReady("" + Year + Month + Day + mensa)) {
-			return true;
-		}
-
-		return false;
-
-	}
+	private FileStatusManagement xmlfileStatusObject = new FileStatusManagement();
 
 	/**
 	 * Prüft ob Datei vorhanden, wenn nicht wird sie aus Netz geladen
@@ -923,10 +748,12 @@ public class MensaService extends Service {
 	private status prepareXML(String mensa, int inYear, int inMonth, int inDay,
 			boolean updateNow, boolean isExistingCheck) throws CustomException {
 
-		if (inWork_XML_is_updated(mensa, inYear, inMonth, inDay))
+		if (xmlfileStatusObject
+				.isUpdated("" + inYear + inMonth + inDay + mensa))
 			return status.Updated;
 
-		if (inWork_XML_is_ready(mensa, inYear, inMonth, inDay) && !updateNow)
+		if (xmlfileStatusObject
+				.isUpdated("" + inYear + inMonth + inDay + mensa) && !updateNow)
 			return status.Existing;
 
 		if (inWork_XML_start_working(mensa, inYear, inMonth, inDay)) {
@@ -939,7 +766,8 @@ public class MensaService extends Service {
 
 				try {
 					Boolean stat = loadXMLtoSD(mensa, inYear, inMonth, inDay);
-					inWork_XML_set_updated(mensa, inYear, inMonth, inDay);
+					xmlfileStatusObject.setupdated("" + inYear + inMonth
+							+ inDay + mensa);
 					inWork_XML_remove_working(mensa, inYear, inMonth, inDay);
 					if (stat)
 						return status.nowUpdated;
@@ -951,7 +779,7 @@ public class MensaService extends Service {
 					throw e;
 				}
 			}
-			inWork_XML_set_ready(mensa, inYear, inMonth, inDay);
+			xmlfileStatusObject.setready("" + inYear + inMonth + inDay + mensa);
 			inWork_XML_remove_working(mensa, inYear, inMonth, inDay);
 			return status.Existing;
 		}
@@ -1469,20 +1297,24 @@ public class MensaService extends Service {
 												&& inWork_XML_start_working(
 														u2mensa, u2year,
 														u2month, u2day)) {
-											inWork_XML_remove_status(u2mensa,
-													u2year, u2month, u2day);
+											xmlfileStatusObject.remove(""
+													+ u2year + u2month + u2day
+													+ u2mensa);
 											filelist_of_cache[i].delete();
 											inWork_XML_remove_working(u2mensa,
 													u2year, u2month, u2day);
 										}
 										if (MimeType.equals("png")
-												&& inWork_Image_start_working(imgName
-														+ "_" + imgpixelSize)) {
-											inWork_Image_remove_status(imgName
-													+ "_" + imgpixelSize);
+												&& inWork_Image_start_working(
+														imgName, (new Integer(
+																imgpixelSize)))) {
+											imagefileStatusObject
+													.remove(imgName + "_"
+															+ imgpixelSize);
 											filelist_of_cache[i].delete();
-											inWork_Image_remove_working(imgName
-													+ "_" + imgpixelSize);
+											inWork_Image_remove_working(
+													imgName, (new Integer(
+															imgpixelSize)));
 										}
 									}
 								}
