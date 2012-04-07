@@ -649,8 +649,6 @@ public class MensaService extends Service {
 		ready, updated
 	};
 
-	
-
 	/**
 	 * XML file Status Objekt
 	 */
