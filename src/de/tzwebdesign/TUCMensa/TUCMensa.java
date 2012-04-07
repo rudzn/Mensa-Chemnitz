@@ -288,7 +288,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 					prepareAllImages();
 
-					IOinstance.del_oldpic();
+					IOinstance.deleteOldFiles();
 
 					mHandler.post(completedloading);
 

@@ -15,10 +15,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -40,8 +38,11 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 
 public class MensaService extends Service {
-	// private NotificationManager mNM;
 
+	/**
+	 * Zeitversatz in Stunden um den der nächste Tag vorgezogen wird in der
+	 * Anzeige
+	 */
 	private int offset;
 
 	private int mYear;
@@ -134,21 +135,13 @@ public class MensaService extends Service {
 
 	@Override
 	public void onCreate() {
-		// mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-
-		// Display a notification about us starting. We put an icon in the
-		// status bar.
-		// showNotification();
-
-		// Toast.makeText(this,"Service created ...", Toast.LENGTH_LONG).show();
 
 		setdate();
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		// Log.i("LocalService", "Received start id " + startId + ": " +
-		// intent);
+
 		// We want this service to continue running until it is explicitly
 		// stopped, so return sticky.
 		return START_STICKY;
@@ -156,15 +149,6 @@ public class MensaService extends Service {
 
 	@Override
 	public void onDestroy() {
-		// Cancel the persistent notification.
-		// mNM.cancel(R.string.local_service_started);
-
-		// Tell the user we stopped.
-		// Toast.makeText(this, R.string.local_service_stopped,
-		// Toast.LENGTH_SHORT).show();
-
-		// Toast.makeText(this, "Service destroyed ...",
-		// Toast.LENGTH_LONG).show();
 
 	}
 
@@ -238,39 +222,9 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Speichert die gerade in arbeit befindlichen Bilder
+	 * Objekt zur verwaltung gerade in arbeit befindlicher Bilder
 	 */
-	private List<String> inWork_Image_working = new ArrayList<String>();
-
-	/**
-	 * löscht das Bild wieder aus 'in arbeit'
-	 * 
-	 * @param name
-	 *            Bildname
-	 */
-	private void inWork_Image_remove_working(String name, Integer imageSize) {
-		synchronized (inWork_Image_working) {
-			inWork_Image_working.remove(name + "_" + imageSize);
-		}
-	}
-
-	/**
-	 * Setzt das bild als 'in arbeit' wenn noch nicht als 'in arbeit' markiert
-	 * 
-	 * @param name
-	 *            Bildname
-	 * @return True wenn 'in arbeit' gesetzt wurde, False wenn schon 'in arbeit'
-	 */
-	private boolean inWork_Image_start_working(String name, Integer imageSize) {
-		synchronized (inWork_Image_working) {
-			if (!inWork_Image_working.contains(name)) {
-				inWork_Image_working.add(name + "_" + imageSize);
-				return true;
-			}
-
-			return false;
-		}
-	}
+	private FileWorking imageFileWorking = new FileWorking();
 
 	/**
 	 * Image file Status Objekt
@@ -299,6 +253,8 @@ public class MensaService extends Service {
 	}
 
 	/**
+	 * Liefert Bild wen vorhanden, ansonsten wird es nachgeladen (parameter
+	 * weichen verhalten ab)
 	 * 
 	 * @param imgName
 	 *            Bildname
@@ -315,41 +271,41 @@ public class MensaService extends Service {
 			boolean isExistingCheck, int image_pixel_size)
 			throws CustomException {
 
-		String imgName_4 = fourDigitsNumberformat.format(Integer
+		String imgNameWithSize = fourDigitsNumberformat.format(Integer
 				.parseInt(imgName))
 				+ "_"
 				+ fourDigitsNumberformat.format(image_pixel_size);
 
-		if (imagefileStatusObject.isUpdated(imgName_4))
+		if (imagefileStatusObject.isUpdated(imgNameWithSize))
 			return status.Updated;
 
-		if (imagefileStatusObject.isReady(imgName_4) && !updateNow)
+		if (imagefileStatusObject.isReady(imgNameWithSize) && !updateNow)
 			return status.Existing;
 
-		if (inWork_Image_start_working(imgName_4, image_pixel_size)) {
+		if (imageFileWorking.start(imgNameWithSize)) {
 
 			if (!fileExists_Image(imgName, image_pixel_size) || updateNow) {
 				if (isExistingCheck) {
-					inWork_Image_remove_working(imgName_4, image_pixel_size);
+					imageFileWorking.remove(imgNameWithSize);
 					return status.nonExisting;
 				}
 
 				try {
 					Boolean stat = loadIMAGEtoSD(imgName, image_pixel_size);
-					imagefileStatusObject.setupdated(imgName_4);
-					inWork_Image_remove_working(imgName_4, image_pixel_size);
+					imagefileStatusObject.setupdated(imgNameWithSize);
+					imageFileWorking.remove(imgNameWithSize);
 					if (stat)
 						return status.nowUpdated;
 					else
 						return status.nonUpdated;
 
 				} catch (CustomException e) {
-					inWork_Image_remove_working(imgName_4, image_pixel_size);
+					imageFileWorking.remove(imgNameWithSize);
 					throw e;
 				}
 			}
-			imagefileStatusObject.setready(imgName_4);
-			inWork_Image_remove_working(imgName_4, image_pixel_size);
+			imagefileStatusObject.setready(imgNameWithSize);
+			imageFileWorking.remove(imgNameWithSize);
 			return status.Existing;
 		}
 		return status.working;
@@ -373,6 +329,7 @@ public class MensaService extends Service {
 	public status getImage_status(String imgName, boolean updateNow,
 			boolean isExistingCheck, int image_pixel_size)
 			throws CustomException {
+
 		status stat = null;
 		for (int i = 0; i < 150; i++) {
 			stat = prepareImage(imgName, updateNow, isExistingCheck,
@@ -581,69 +538,9 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Speichert die XML Dateien welche gerade in bearbeitung
+	 * Objekt zur verwaltung gerade in arbeit befindlicher XML Dateien
 	 */
-	private List<String> inWork_XML_working = new ArrayList<String>();
-
-	/**
-	 * Setzt XML Datei auf 'working'
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 */
-	private void inWork_XML_set_working(String mensa, int Year, int Month,
-			int Day) {
-		synchronized (inWork_XML_working) {
-			inWork_XML_working.add((new Integer(Year)).toString()
-					+ (new Integer(Month)).toString()
-					+ (new Integer(Day)).toString() + mensa);
-
-		}
-	}
-
-	/**
-	 * Entfernt XML als 'working'
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 */
-	private void inWork_XML_remove_working(String mensa, int Year, int Month,
-			int Day) {
-		synchronized (inWork_XML_working) {
-			inWork_XML_working.remove((new Integer(Year)).toString()
-					+ (new Integer(Month)).toString()
-					+ (new Integer(Day)).toString() + mensa);
-		}
-	}
-
-	/**
-	 * Setzt XML als 'working' wenn noch nicht geschehen
-	 * 
-	 * @param mensa
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 * @return True wenn XML noch nicht vorher als 'working' markiert
-	 */
-	private boolean inWork_XML_start_working(String mensa, int Year, int Month,
-			int Day) {
-		synchronized (inWork_XML_working) {
-			if (!inWork_XML_working.contains((new Integer(Year)).toString()
-					+ (new Integer(Month)).toString()
-					+ (new Integer(Day)).toString() + mensa)) {
-				inWork_XML_set_working(mensa, Year, Month, Day);
-				return true;
-			}
-
-			return false;
-		}
-	}
+	private FileWorking xmlFileWorking = new FileWorking();
 
 	public enum filestatus {
 		ready, updated
@@ -682,11 +579,11 @@ public class MensaService extends Service {
 				.isUpdated("" + inYear + inMonth + inDay + mensa) && !updateNow)
 			return status.Existing;
 
-		if (inWork_XML_start_working(mensa, inYear, inMonth, inDay)) {
+		if (xmlFileWorking.start(mensa + inYear + inMonth + inDay)) {
 
 			if (updateNow || !fileExists_XML(mensa, inYear, inMonth, inDay)) {
 				if (isExistingCheck) {
-					inWork_XML_remove_working(mensa, inYear, inMonth, inDay);
+					xmlFileWorking.remove(mensa + inYear + inMonth + inDay);
 					return status.nonExisting;
 				}
 
@@ -694,19 +591,19 @@ public class MensaService extends Service {
 					Boolean stat = loadXMLtoSD(mensa, inYear, inMonth, inDay);
 					xmlfileStatusObject.setupdated("" + inYear + inMonth
 							+ inDay + mensa);
-					inWork_XML_remove_working(mensa, inYear, inMonth, inDay);
+					xmlFileWorking.remove(mensa + inYear + inMonth + inDay);
 					if (stat)
 						return status.nowUpdated;
 					else
 						return status.nonUpdated;
 
 				} catch (CustomException e) {
-					inWork_XML_remove_working(mensa, inYear, inMonth, inDay);
+					xmlFileWorking.remove(mensa + inYear + inMonth + inDay);
 					throw e;
 				}
 			}
 			xmlfileStatusObject.setready("" + inYear + inMonth + inDay + mensa);
-			inWork_XML_remove_working(mensa, inYear, inMonth, inDay);
+			xmlFileWorking.remove(mensa + inYear + inMonth + inDay);
 			return status.Existing;
 		}
 		return status.working;
@@ -747,7 +644,7 @@ public class MensaService extends Service {
 
 		getXML_status(mensa, Year, Month, Day, false, isExistingCheck);
 
-		return loadXMLintoRuntime(mensa, Year, Month, Day);
+		return readXMLasNodeList(mensa, Year, Month, Day);
 
 	}
 
@@ -874,7 +771,7 @@ public class MensaService extends Service {
 			}
 
 			if (fileExists_XML(mensa, Year, Month, Day)
-					&& readXMLs(mensa, Year, Month, Day).equals(hm)) {
+					&& readXMLasString(mensa, Year, Month, Day).equals(hm)) {
 				return false;
 
 			}
@@ -1022,22 +919,6 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Liest Essen aus XML Datei
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @return nodelist
-	 * @throws CustomException
-	 */
-	public NodeList loadXMLintoRuntime(String mensa) throws CustomException {
-
-		Document doc = readXML(mensa, mYear, mMonth, mDay);
-		NodeList nodes = doc.getElementsByTagName("essen");
-		return nodes;
-
-	}
-
-	/**
 	 * Liest Essen aus XML Datei für bestimmtes Datum
 	 * 
 	 * @param mensa
@@ -1048,10 +929,10 @@ public class MensaService extends Service {
 	 * @return nodelist
 	 * @throws CustomException
 	 */
-	public NodeList loadXMLintoRuntime(String mensa, int Year, int Month,
+	private NodeList readXMLasNodeList(String mensa, int Year, int Month,
 			int Day) throws CustomException {
 
-		Document doc = readXML(mensa, Year, Month, Day);
+		Document doc = readXMLasXMLDocument(mensa, Year, Month, Day);
 		NodeList nodes = doc.getElementsByTagName("essen");
 		return nodes;
 
@@ -1068,8 +949,8 @@ public class MensaService extends Service {
 	 * @return xml document
 	 * @throws CustomException
 	 */
-	public Document readXML(String mensa, int Year, int Month, int Day)
-			throws CustomException {
+	private Document readXMLasXMLDocument(String mensa, int Year, int Month,
+			int Day) throws CustomException {
 		synchronized (FileSync) {
 			try {
 
@@ -1102,7 +983,7 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Liest XML Datei von SD
+	 * Liest XML Datei von SD als String
 	 * 
 	 * @param mensa
 	 *            rh oder st
@@ -1112,7 +993,7 @@ public class MensaService extends Service {
 	 * @return XML als String
 	 * @throws CustomException
 	 */
-	public String readXMLs(String mensa, int Year, int Month, int Day)
+	private String readXMLasString(String mensa, int Year, int Month, int Day)
 			throws CustomException {
 		synchronized (FileSync) {
 			try {
@@ -1141,10 +1022,10 @@ public class MensaService extends Service {
 	/**
 	 * Löscht Bilder und Essenslisten die veraltet sind aus dem Speicher
 	 */
-	public void del_oldpic() {
+	public void deleteOldFiles() {
 
 		// Kann in nachfolgenden Versionen wieder weg
-		CreateDir();
+		CreateDir(); // Reicht die .nomedia datei nach für allte installationen
 
 		Calendar caldel = new GregorianCalendar(mYear, mMonth, mDay);
 
@@ -1220,27 +1101,26 @@ public class MensaService extends Service {
 									synchronized (FileSync) {
 
 										if (MimeType.equals("xml")
-												&& inWork_XML_start_working(
-														u2mensa, u2year,
-														u2month, u2day)) {
+												&& xmlFileWorking.start(""
+														+ u2mensa + u2year
+														+ u2month + u2day)) {
 											xmlfileStatusObject.remove(""
 													+ u2year + u2month + u2day
 													+ u2mensa);
 											filelist_of_cache[i].delete();
-											inWork_XML_remove_working(u2mensa,
-													u2year, u2month, u2day);
+											xmlFileWorking.remove("" + u2mensa
+													+ u2year + u2month + u2day);
 										}
 										if (MimeType.equals("png")
-												&& inWork_Image_start_working(
-														imgName, (new Integer(
-																imgpixelSize)))) {
+												&& imageFileWorking
+														.start(imgName + "_"
+																+ imgpixelSize)) {
 											imagefileStatusObject
 													.remove(imgName + "_"
 															+ imgpixelSize);
 											filelist_of_cache[i].delete();
-											inWork_Image_remove_working(
-													imgName, (new Integer(
-															imgpixelSize)));
+											imageFileWorking.remove(imgName
+													+ imgpixelSize);
 										}
 									}
 								}
@@ -1256,6 +1136,8 @@ public class MensaService extends Service {
 	}
 
 	/**
+	 * Lädt so lange XML Dateien (Essenstage) aus dem netz bis keine mehr
+	 * vorliegen / aktualisiert bestehende
 	 * 
 	 * @param mensa
 	 *            rh oder st
@@ -1295,8 +1177,7 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Lässt prüfen ob alle Datein vorhanden sind (Das Ergebnis landet dabei im
-	 * program, und hällt im ram Datei status vor)
+	 * Erzeugt den Statusspeicher über XML Dateien
 	 * 
 	 * @param mensa
 	 *            rh oder st
