@@ -15,12 +15,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -345,15 +349,83 @@ public class IO_XML {
 	 * @param Year
 	 * @param Month
 	 * @param Day
-	 * @return nodelist
+	 * @return EssenListe
 	 * @throws CustomException
 	 */
-	public NodeList readXMLasNodeList(String mensa, int Year, int Month, int Day)
+	public List<Essen> getEssenList(String mensa, int Year, int Month, int Day)
 			throws CustomException {
 
+		List<Essen> essenListe = new ArrayList<Essen>();
+
 		Document doc = readXMLasXMLDocument(mensa, Year, Month, Day);
-		NodeList nodes = doc.getElementsByTagName("essen");
-		return nodes;
+		NodeList nodes_temp = doc.getElementsByTagName("essen");
+
+		for (int essen_position = 0; essen_position < nodes_temp.getLength(); essen_position++) {
+
+			String name;
+			int nummer;
+			String text;
+			int bildnummer;
+			int wertung;
+			String preisgast;
+			String preismitarbeiter;
+			String preisstudent;
+			Boolean vegetarisch;
+			Boolean alkohol;
+			Boolean rind;
+			Boolean schwein;
+			String lastchange;
+
+			NamedNodeMap attrs = nodes_temp.item(essen_position)
+					.getAttributes();
+
+			Attr attribute = (Attr) attrs.getNamedItem("name");
+			name = attribute.getValue();
+
+			attribute = (Attr) attrs.getNamedItem("number");
+			nummer = (new Integer(attribute.getValue()));
+
+			text = nodes_temp.item(essen_position).getFirstChild()
+					.getNodeValue().trim();
+
+			attribute = (Attr) attrs.getNamedItem("bild");
+			bildnummer = (new Integer(attribute.getValue()));
+
+			attribute = (Attr) attrs.getNamedItem("wertung");
+			wertung = (new Integer(attribute.getValue()));
+
+			attribute = (Attr) attrs.getNamedItem("preisg");
+			preisgast = attribute.getValue();
+
+			attribute = (Attr) attrs.getNamedItem("preism");
+			preismitarbeiter = attribute.getValue();
+
+			attribute = (Attr) attrs.getNamedItem("preiss");
+			preisstudent = attribute.getValue();
+
+			attribute = (Attr) attrs.getNamedItem("vegetarisch");
+			vegetarisch = attribute.getValue() != "false";
+
+			attribute = (Attr) attrs.getNamedItem("alk");
+			alkohol = attribute.getValue() != "false";
+
+			attribute = (Attr) attrs.getNamedItem("rind");
+			rind = attribute.getValue() != "false";
+
+			attribute = (Attr) attrs.getNamedItem("schwein");
+			schwein = attribute.getValue() != "false";
+
+			attribute = (Attr) attrs.getNamedItem("lastchange");
+			lastchange = attribute.getValue();
+
+			Essen newEssen = new Essen(name, nummer, text, bildnummer, wertung,
+					preisgast, preismitarbeiter, preisstudent, vegetarisch,
+					alkohol, rind, schwein, lastchange);
+
+			essenListe.add(newEssen);
+		}
+
+		return essenListe;
 
 	}
 

@@ -17,6 +17,7 @@ import java.net.URLConnection;
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -249,7 +250,7 @@ public class MensaService extends Service {
 	 * @return Bild
 	 * @throws CustomException
 	 */
-	public Bitmap getImage(String imgName, boolean isExistingCheck)
+	public Bitmap getImage(int imgName, boolean isExistingCheck)
 			throws CustomException {
 
 		getImage_status(imgName, false, isExistingCheck,
@@ -271,7 +272,7 @@ public class MensaService extends Service {
 	 * @return Bild
 	 * @throws CustomException
 	 */
-	public Bitmap getImage(String imgName, boolean isExistingCheck,
+	public Bitmap getImage(int imgName, boolean isExistingCheck,
 			int image_pixel_size) throws CustomException {
 
 		getImage_status(imgName, false, isExistingCheck, image_pixel_size);
@@ -295,12 +296,11 @@ public class MensaService extends Service {
 	 * @return Status des Bildes
 	 * @throws CustomException
 	 */
-	private status prepareImage(String imgName, boolean updateNow,
+	private status prepareImage(int imgName, boolean updateNow,
 			boolean isExistingCheck, int image_pixel_size)
 			throws CustomException {
 
-		String imgNameWithSize = fourDigitsNumberformat.format(Integer
-				.parseInt(imgName))
+		String imgNameWithSize = fourDigitsNumberformat.format(imgName)
 				+ "_"
 				+ fourDigitsNumberformat.format(image_pixel_size);
 
@@ -354,7 +354,7 @@ public class MensaService extends Service {
 	 * @return Status
 	 * @throws CustomException
 	 */
-	public status getImage_status(String imgName, boolean updateNow,
+	public status getImage_status(int imgName, boolean updateNow,
 			boolean isExistingCheck) throws CustomException {
 
 		return getImage_status(imgName, updateNow, isExistingCheck,
@@ -377,7 +377,7 @@ public class MensaService extends Service {
 	 * @return Status
 	 * @throws CustomException
 	 */
-	public status getImage_status(String imgName, boolean updateNow,
+	public status getImage_status(int imgName, boolean updateNow,
 			boolean isExistingCheck, int image_pixel_size)
 			throws CustomException {
 
@@ -477,12 +477,12 @@ public class MensaService extends Service {
 	 * 
 	 * @param isExistingCheck
 	 *            True unterdrückt aktualisierung, prüft nur existens
-	 * @return nodelist
+	 * @return Essenliste
 	 * @throws CustomException
 	 */
-	public NodeList getXML(boolean isExistingCheck) throws CustomException {
+	public List<Essen> getEssenList(boolean isExistingCheck) throws CustomException {
 
-		return getXML(config.mensa, mYear, mMonth, mDay, isExistingCheck);
+		return getEssenList(config.mensa, mYear, mMonth, mDay, isExistingCheck);
 
 	}
 
@@ -493,13 +493,13 @@ public class MensaService extends Service {
 	 *            rh oder st
 	 * @param isExistingCheck
 	 *            True unterdrückt aktualisierung, prüft nur existens
-	 * @return nodelist
+	 * @return Essenliste
 	 * @throws CustomException
 	 */
-	public NodeList getXML(String mensa, boolean isExistingCheck)
+	public List<Essen> getEssenList(String mensa, boolean isExistingCheck)
 			throws CustomException {
 
-		return getXML(mensa, mYear, mMonth, mDay, isExistingCheck);
+		return getEssenList(mensa, mYear, mMonth, mDay, isExistingCheck);
 
 	}
 
@@ -513,15 +513,15 @@ public class MensaService extends Service {
 	 * @param Day
 	 * @param isExistingCheck
 	 *            Wenn True aktualisieren unterdrücken
-	 * @return nodelist
+	 * @return Essenliste
 	 * @throws CustomException
 	 */
-	public NodeList getXML(String mensa, int Year, int Month, int Day,
+	public List<Essen> getEssenList(String mensa, int Year, int Month, int Day,
 			boolean isExistingCheck) throws CustomException {
 
 		getXML_status(mensa, Year, Month, Day, false, isExistingCheck);
 
-		return ioXML.readXMLasNodeList(mensa, Year, Month, Day);
+		return ioXML.getEssenList(mensa, Year, Month, Day);
 
 	}
 

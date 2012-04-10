@@ -4,6 +4,7 @@ import java.io.File;
 
 import java.text.NumberFormat;
 import java.util.Calendar;
+import java.util.List;
 
 import org.w3c.dom.Attr;
 
@@ -209,7 +210,7 @@ public class ListView extends Activity {
 			int mMonth;
 			int mDay;
 
-			NodeList nodes;
+			List<Essen> nodes;
 
 			while (true) {
 
@@ -227,7 +228,7 @@ public class ListView extends Activity {
 				// NodeList nodes = loadXML(mYear, mMonth, mDay);
 
 				try {
-					nodes = IOinstance.getXML(mensa, mYear, mMonth, mDay, true);
+					nodes = IOinstance.getEssenList(mensa, mYear, mMonth, mDay, true);
 					// nodes=loadXML( mYear, mMonth, mDay);
 
 				} catch (CustomException e) {
@@ -256,34 +257,31 @@ public class ListView extends Activity {
 				tw0.setTextSize(40);
 				ll.addView(tw0);
 
-				for (int i = 0; i < nodes.getLength(); i++) {
+				for (int i = 0; i < nodes.size(); i++) {
 					// CheckBox cb = new CheckBox(this);
 					// cb.setText("I'm dynamic!");
 					// ll.addView(cb);
 
-					Element element = (Element) nodes.item(i);
+					Essen element = nodes.get(i);
 
-					NamedNodeMap attrs = element.getAttributes();
 					TextView tw1 = new TextView(this);
 
-					Attr attribute = (Attr) attrs.getNamedItem("name");
-					tw1.setText(attribute.getValue());
+;
+					tw1.setText(element.name);
 					tw1.setTypeface(null, 1);
 					tw1.setTextSize(20);
 					ll.addView(tw1);
 
 					TextView tw2 = new TextView(this);
 
-					Attr attribute2 = (Attr) attrs.getNamedItem("eng");
-					String eng_essen = attribute2.getValue();
-					String text = "";
-					attribute = (Attr) attrs.getNamedItem("name");
-					if (sprache.equals("de") || eng_essen.length() == 0) {
-						// tw2.setText(attribute.getValue());
 
-						text = element.getFirstChild().getNodeValue().trim();
+
+					String text = "";
+
+					if (sprache.equals("de")) {
+						text = element.text;
 					} else {
-						text = eng_essen;
+						text = element.text;
 
 					}
 

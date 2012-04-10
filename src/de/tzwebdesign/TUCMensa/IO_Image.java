@@ -63,7 +63,7 @@ public class IO_Image {
 	 *            Bildgröße
 	 * @throws CustomException
 	 */
-	public boolean loadIMAGEtoSD(String name, int image_pixel_size)
+	public boolean loadIMAGEtoSD(int name, int image_pixel_size)
 			throws CustomException {
 
 		String image_pixel_size_string;
@@ -129,7 +129,7 @@ public class IO_Image {
 	 * @return Bild
 	 * @throws CustomException
 	 */
-	public synchronized Bitmap readImage(String name, int image_pixel_size)
+	public synchronized Bitmap readImage(int name, int image_pixel_size)
 			throws CustomException {
 
 		Bitmap image = null;
@@ -169,7 +169,7 @@ public class IO_Image {
 	 *            Bildgröße
 	 * @throws CustomException
 	 */
-	private synchronized void saveImage(String name, Bitmap image,
+	private synchronized void saveImage(int name, Bitmap image,
 			int image_pixel_size) throws CustomException {
 		try {
 
@@ -212,7 +212,7 @@ public class IO_Image {
 	 *            Bildgröße
 	 * @return True wenn Bild existiert
 	 */
-	public synchronized boolean fileExists_Image(String name,
+	public synchronized boolean fileExists_Image(int name,
 			int image_pixel_size) {
 
 		return (new File(getFilename_Image(name, image_pixel_size))).exists();
@@ -227,13 +227,13 @@ public class IO_Image {
 	 *            Bildgröße
 	 * @return Dateiname
 	 */
-	private String getFilename_Image(String name, int image_pixel_size) {
+	private String getFilename_Image(int name, int image_pixel_size) {
 
 		String string = root.toString() + "/essenprev_"
 				+ fourDigitsNumberformat.format(mensaService.getmYear()) + "_"
 				+ twoDigitsNumberformat.format(mensaService.getmMonth()) + "_"
 				+ twoDigitsNumberformat.format(mensaService.getmDay()) + "-"
-				+ fourDigitsNumberformat.format(Integer.parseInt(name)) + "_"
+				+ fourDigitsNumberformat.format(name) + "_"
 				+ fourDigitsNumberformat.format(image_pixel_size) + ".png";
 		return string;
 

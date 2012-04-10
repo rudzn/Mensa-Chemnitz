@@ -1,6 +1,7 @@
 package de.tzwebdesign.TUCMensa;
 
 import java.text.NumberFormat;
+import java.util.List;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -103,7 +104,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	/**
 	 * Speichert die derzeit angezeigten Essen
 	 */
-	private NodeList nodes;
+	private List<Essen> nodes;
 
 	/**
 	 * Semaphor damit Nodelist nicht gleochzeitig geschrieben und gelesen wird
@@ -115,9 +116,9 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 * 
 	 * @param name
 	 */
-	private void setNodes(NodeList name) {
+	private void setNodes(List<Essen> essenListe) {
 		synchronized (lock1) {
-			nodes = name;
+			nodes = essenListe;
 		}
 	}
 
@@ -126,15 +127,13 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 * 
 	 * @return
 	 */
-	private NodeList getNodes() {
+	private List<Essen> getNodes() {
 		synchronized (lock1) {
 			return nodes;
 		}
 	}
 
-
 	private boolean config_update = true;
-
 
 	private NumberFormat twoDigitsNumberformat = NumberFormat.getInstance();
 	private NumberFormat fourDigitsNumberformat = NumberFormat.getInstance();
@@ -268,7 +267,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 			public void run() {
 				try {
 
-					setNodes(mensaService.getXML(false));
+					setNodes(mensaService.getEssenList(false));
 					mHandler.post(showdataXML);
 
 					mensaService.checkAllXML();
@@ -277,7 +276,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 					try {
 						if (mensaService.getXML_status(true, false) == status.Updated)
-							setNodes(mensaService.getXML(false));
+							setNodes(mensaService.getEssenList(false));
 
 					} catch (CustomException e) {
 						// Verwerfe
@@ -315,7 +314,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 * gespeichert werden Ansonsten Flackern die Bilder in wilder reihenfolge
 	 * vorm Nutzer, und am ende bleibt beliebig eins stehen.
 	 */
-	private String imageState;
+	private int imageState;
 
 	/**
 	 * Gibt Bildzurück was Service in image zwischengespeichert hat
@@ -336,7 +335,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 * @param bm
 	 *            Bild
 	 */
-	private void setimage(String name, Bitmap bm) {
+	private void setimage(int name, Bitmap bm) {
 		synchronized (lock2) {
 			if (imageState == name)
 				image = bm;
@@ -349,7 +348,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 * @param name
 	 *            Bildname
 	 */
-	private void setimageState(String name) {
+	private void setimageState(int name) {
 		synchronized (lock2) {
 			imageState = name;
 			image = null;
@@ -362,9 +361,9 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 * @param value
 	 *            Bildname
 	 */
-	private void pullImage(String value) {
+	private void pullImage(int value) {
 
-		final String name = value;
+		final int name = value;
 
 		Thread t = new Thread() {
 
@@ -374,8 +373,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 					if (mensaService.getImage_status(name, false, true) == status.nonExisting)
 						mHandler.post(PullImage_animation);
 
-					setimage(name,
-							mensaService.getImage(name, false));
+					setimage(name, mensaService.getImage(name, false));
 					mHandler.post(PushImage);
 
 					mHandler.post(PullImage_animation_end);
@@ -408,16 +406,15 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 			public void run() {
 
-				NodeList Nodes_temp = getNodes();
+				List<Essen> Nodes_temp = getNodes();
 
-				for (int i = 0; i < Nodes_temp.getLength(); i++) {
-					NamedNodeMap attrs = Nodes_temp.item(i).getAttributes();
-					Attr attribute = (Attr) attrs.getNamedItem("bild");
+				for (int i = 0; i < Nodes_temp.size(); i++) {
+					Essen element = Nodes_temp.get(i);
 
 					// prepareImage(attribute.getValue(),i);
 
 					try {
-						mensaService.getImage_status(attribute.getValue(), true,
+						mensaService.getImage_status(element.bildnummer, true,
 								false);
 					} catch (CustomException e) {
 						// Verwerfe
@@ -537,8 +534,6 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 		mensaService.refreshconfig();
 
-
-
 		ImageView image1 = (ImageView) findViewById(R.id.ImageView01);
 		if (!mensaService.config.imageSizeSmall) {
 			RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
@@ -627,10 +622,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 */
 	private synchronized void refresh() {
 
-		NodeList nodes_temp = getNodes();
-
-		NamedNodeMap attrs = nodes_temp.item(essen_position).getAttributes();
-		Attr attribute = (Attr) attrs.getNamedItem("bild");
+		Essen element = getNodes().get(essen_position);
 
 		ImageView image1;
 		image1 = (ImageView) findViewById(R.id.ImageView01);
@@ -638,8 +630,8 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		image1.setImageBitmap(Bitmap.createBitmap(100, 100,
 				Bitmap.Config.ALPHA_8));
 
-		setimageState(attribute.getValue());
-		pullImage(attribute.getValue());
+		setimageState(element.bildnummer);
+		pullImage(element.bildnummer);
 
 		// ////////////
 
@@ -661,31 +653,33 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		}
 		// ////////////
 
-		attribute = (Attr) attrs.getNamedItem("name");
 		TextView TextView_Name = (TextView) findViewById(R.id.TextView02);
 
-		TextView_Name.setText(attribute.getValue());
+		TextView_Name.setText(element.name);
 
 		// ////////////
 
-		attribute = (Attr) attrs.getNamedItem("preis" + mensaService.config.preiskat);
 		TextView TextView_Preis = (TextView) findViewById(R.id.TextView03);
 
-		TextView_Preis.setText(this.getString(R.string.Preiskat) + " "
-				+ attribute.getValue() + "€");
+		if (mensaService.config.preiskat == "g")
+			TextView_Preis.setText(this.getString(R.string.Preiskat) + " "
+					+ element.preisgast + "€");
+		if (mensaService.config.preiskat == "m")
+			TextView_Preis.setText(this.getString(R.string.Preiskat) + " "
+					+ element.preismitarbeiter + "€");
+		if (mensaService.config.preiskat == "s")
+			TextView_Preis.setText(this.getString(R.string.Preiskat) + " "
+					+ element.preisstudent + "€");
 
 		// /////////////////
 		TextView TextView1 = (TextView) findViewById(R.id.TextView01);
-		attribute = (Attr) attrs.getNamedItem("eng");
-		String eng_essen = attribute.getValue();
-		if (mensaService.config.sprache.equals("de") || eng_essen.length() == 0) {
 
-			Element element = (Element) nodes_temp.item(essen_position);
+		if (mensaService.config.sprache.equals("de")) {
 
-			TextView1.setText(element.getFirstChild().getNodeValue().trim());
+			TextView1.setText(element.text);
 		} else {
 
-			TextView1.setText(eng_essen);
+			TextView1.setText(element.text);
 		}
 	}
 
@@ -708,12 +702,12 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 */
 	public void backwardnow() {
 
-		NodeList nodes_temp = getNodes();
+		List<Essen> nodes_temp = getNodes();
 
 		if (nodes_temp == null)
 			return;
-		essen_position = (essen_position - 1 + nodes_temp.getLength())
-				% nodes_temp.getLength();
+		essen_position = (essen_position - 1 + nodes_temp.size())
+				% nodes_temp.size();
 		refresh();
 
 	}
@@ -728,11 +722,11 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 */
 	private void forwardnow() {
 
-		NodeList nodes_temp = getNodes();
+		List<Essen> nodes_temp = getNodes();
 
 		if (nodes_temp == null)
 			return;
-		essen_position = (essen_position + 1) % nodes_temp.getLength();
+		essen_position = (essen_position + 1) % nodes_temp.size();
 		refresh();
 
 	}
