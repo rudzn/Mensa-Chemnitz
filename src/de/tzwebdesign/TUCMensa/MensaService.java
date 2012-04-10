@@ -67,14 +67,12 @@ public class MensaService extends Service {
 	 */
 	public void setdate() {
 
-		SharedPreferences settings = PreferenceManager
-				.getDefaultSharedPreferences(this);
 
-		offset = Integer.parseInt(settings.getString("offset", "0"));
+
 
 		Calendar c = Calendar.getInstance();
 
-		c.add(Calendar.HOUR, offset);
+		c.add(Calendar.HOUR, config.offset);
 
 		if (c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
 			c.add(Calendar.DATE, 2);
@@ -97,14 +95,10 @@ public class MensaService extends Service {
 	 */
 	public boolean checkdate() {
 
-		SharedPreferences settings = PreferenceManager
-				.getDefaultSharedPreferences(this);
-
-		offset = Integer.parseInt(settings.getString("offset", "0"));
 
 		Calendar c = Calendar.getInstance();
 
-		c.add(Calendar.HOUR, offset);
+		c.add(Calendar.HOUR, config.offset);
 
 		if (c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
 			c.add(Calendar.DATE, 2);
@@ -133,9 +127,13 @@ public class MensaService extends Service {
 		}
 	}
 
+	public Configuration config;
+
 	@Override
 	public void onCreate() {
-
+		SharedPreferences settings = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		config = new Configuration(settings);
 		setdate();
 	}
 

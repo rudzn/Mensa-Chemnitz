@@ -132,12 +132,9 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		}
 	}
 
-	private String preiskat, mensa, sprache;
-	private boolean imageloading = false;
-	private boolean imagesize = false;
-	private int image_pixel_size;
+
 	private boolean config_update = true;
-	private boolean ListViewFirst = false;
+
 
 	private NumberFormat twoDigitsNumberformat = NumberFormat.getInstance();
 	private NumberFormat fourDigitsNumberformat = NumberFormat.getInstance();
@@ -253,7 +250,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 			ladeService();
 
 		}
-		if (ListViewFirst && !ListViewShowed) {
+		if (IOinstance.config.ListViewFirst && !ListViewShowed) {
 			startActivity(it);
 			// Toast.makeText(TUCMensa.this,"Starte Activity!",Toast.LENGTH_SHORT).show();
 		}
@@ -271,16 +268,16 @@ public class TUCMensa extends Activity implements OnGestureListener {
 			public void run() {
 				try {
 
-					setNodes(IOinstance.getXML(mensa, false));
+					setNodes(IOinstance.getXML(IOinstance.config.mensa, false));
 					mHandler.post(showdataXML);
 
-					IOinstance.checkAllXML(mensa);
-					if (!ListViewFirst)
-						IOinstance.LoadAllXML(mensa);
+					IOinstance.checkAllXML(IOinstance.config.mensa);
+					if (!IOinstance.config.ListViewFirst)
+						IOinstance.LoadAllXML(IOinstance.config.mensa);
 
 					try {
-						if (IOinstance.getXML_status(mensa, true, false) == status.Updated)
-							setNodes(IOinstance.getXML(mensa, false));
+						if (IOinstance.getXML_status(IOinstance.config.mensa, true, false) == status.Updated)
+							setNodes(IOinstance.getXML(IOinstance.config.mensa, false));
 
 					} catch (CustomException e) {
 						// Verwerfe
@@ -375,11 +372,11 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 				try {
 					if (IOinstance.getImage_status(name, false, true,
-							image_pixel_size) == status.nonExisting)
+							IOinstance.config.image_pixel_size) == status.nonExisting)
 						mHandler.post(PullImage_animation);
 
 					setimage(name,
-							IOinstance.getImage(name, false, image_pixel_size));
+							IOinstance.getImage(name, false, IOinstance.config.image_pixel_size));
 					mHandler.post(PushImage);
 
 					mHandler.post(PullImage_animation_end);
@@ -405,7 +402,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 * vorbereitet/runterlädt
 	 */
 	private void prepareAllImages() {
-		if (!imageloading)
+		if (!IOinstance.config.imageloading)
 			return;
 
 		Thread t = new Thread() {
@@ -422,7 +419,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 					try {
 						IOinstance.getImage_status(attribute.getValue(), true,
-								false, image_pixel_size);
+								false, IOinstance.config.image_pixel_size);
 					} catch (CustomException e) {
 						// Verwerfe
 					}
@@ -538,26 +535,15 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 * Lädt Einstellungen
 	 */
 	private void get_pref() {
-		SharedPreferences settings = PreferenceManager
-				.getDefaultSharedPreferences(this);
 
-		// offset = Integer.parseInt(settings.getString("offset", "0"));
+		IOinstance.config.refresh();
+		
 		IOinstance.setdate();
-		ListViewFirst = settings.getBoolean("ListViewFirst", false);
-		preiskat = settings.getString("preiskat", "s");
-		mensa = settings.getString("mensa", "rh");
-		sprache = settings.getString("sprache",
-				this.getString(R.string.sprache_default));
-		imageloading = settings.getBoolean("imageloading", false);
-		imagesize = settings.getBoolean("imagesize", false);
 
-		if (settings.getBoolean("image_pixel_size_big", true) == true)
-			image_pixel_size = 350;
-		else
-			image_pixel_size = 190;
+
 
 		ImageView image1 = (ImageView) findViewById(R.id.ImageView01);
-		if (!imagesize) {
+		if (!IOinstance.config.imageSizeSmall) {
 			RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
 					RelativeLayout.LayoutParams.FILL_PARENT,
 					RelativeLayout.LayoutParams.FILL_PARENT);
@@ -661,7 +647,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		// ////////////
 
 		TextView TextView_Data = (TextView) findViewById(R.id.TextView04);
-		if (sprache.equals("de")) {
+		if (IOinstance.config.sprache.equals("de")) {
 			TextView_Data.setText(twoDigitsNumberformat.format(IOinstance
 					.getmDay())
 					+ "."
@@ -685,7 +671,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 		// ////////////
 
-		attribute = (Attr) attrs.getNamedItem("preis" + preiskat);
+		attribute = (Attr) attrs.getNamedItem("preis" + IOinstance.config.preiskat);
 		TextView TextView_Preis = (TextView) findViewById(R.id.TextView03);
 
 		TextView_Preis.setText(this.getString(R.string.Preiskat) + " "
@@ -695,7 +681,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		TextView TextView1 = (TextView) findViewById(R.id.TextView01);
 		attribute = (Attr) attrs.getNamedItem("eng");
 		String eng_essen = attribute.getValue();
-		if (sprache.equals("de") || eng_essen.length() == 0) {
+		if (IOinstance.config.sprache.equals("de") || eng_essen.length() == 0) {
 
 			Element element = (Element) nodes_temp.item(essen_position);
 
