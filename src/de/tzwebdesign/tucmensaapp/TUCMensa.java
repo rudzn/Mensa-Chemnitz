@@ -147,7 +147,6 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
 
-		// startActivity(new Intent(this, ListView.class));
 		gestureScanner = new GestureDetector(this);
 
 		setContentView(R.layout.main);
@@ -163,14 +162,13 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		fourDigitsNumberformat.setMaximumIntegerDigits(4); // The maximum Digits
 															// required is 4
 		fourDigitsNumberformat.setGroupingUsed(false);
-		// Toast.makeText(TUCMensa.this,
-		// "local_service_disconnected",Toast.LENGTH_LONG).show();
 
 		it = new Intent(this, ListView.class);
 
 	}
 
 	private Intent it;
+
 
 	private boolean mIsBound;
 
@@ -230,8 +228,9 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 	private boolean ListViewShowed = false;
 
+	
 	private void Resume() {
-		get_pref();
+		refreshConfig();
 		if (config_update || mensaService.checkdate()) {
 			essen_position = 0;
 			config_update = false;
@@ -244,7 +243,6 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		}
 		if (mensaService.config.ListViewFirst && !ListViewShowed) {
 			startActivity(it);
-			// Toast.makeText(TUCMensa.this,"Starte Activity!",Toast.LENGTH_SHORT).show();
 		}
 		ListViewShowed = true;
 	}
@@ -422,112 +420,20 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		t.start();
 
 	}
-
-	@Override
-	public boolean onTouchEvent(MotionEvent me)
-
-	{
-
-		return gestureScanner.onTouchEvent(me);
-
-	}
-
-	private boolean scrollstart = false;
-
-	@Override
-	public boolean onDown(MotionEvent e)
-
-	{
-		scrollstart = true;
-		// viewA.setText("-" + "DOWN" + "-");
-
-		// Toast.makeText(this, "onDown",
-		// 1).show();
-
-		return true;
-
-	}
-
-	@Override
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-			float velocityY)
-
-	{
-
-		// Toast.makeText(this, "onFling",
-		// 1).show();
-
-		return true;
-
-	}
-
-	@Override
-	public void onLongPress(MotionEvent e)
-
-	{
-
-		// Toast.makeText(this, "onLongPress",
-		// 1).show();
-
-	}
-
-	@Override
-	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-			float distanceY)
-
-	{
-		if (!scrollstart) {
-			return true;
-		}
-		// If distanceX > 0: scroll in right direction
-		// If distanceX < 0: scroll in left direction
-
-		if (distanceX > 0) {
-			// Toast.makeText(this, "right", Toast.LENGTH_SHORT).show();
-			forwardnow();
-		}
-		if (distanceX < 0) {
-			// Toast.makeText(this, "left",Toast.LENGTH_SHORT).show();
-
-			backwardnow();
-		}
-		// Toast.makeText(this, "onScroll",
-		// 1).show();
-
-		scrollstart = false;
-		return true;
-
-	}
-
-	@Override
-	public void onShowPress(MotionEvent e)
-
-	{
-
-		// Toast.makeText(this, "onShowPress",
-		// 1).show();
-	}
-
-	@Override
-	public boolean onSingleTapUp(MotionEvent e)
-
-	{
-
-		// Toast.makeText(this, "onSingleTapUp",
-		// 1).show();
-
-		return true;
-
-	}
+	
+	
+	
 
 	/**
 	 * Lädt Einstellungen
 	 */
-	private void get_pref() {
+	private void refreshConfig() {
 
 		mensaService.refreshconfig();
 
+		// Imagegröße im Layout ändern
 		ImageView image1 = (ImageView) findViewById(R.id.ImageView01);
+
 		if (!mensaService.config.imageSizeSmall) {
 			RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
 					RelativeLayout.LayoutParams.FILL_PARENT,
@@ -567,6 +473,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 * Erzeugt das Menü für den Menübutton
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
+
 		menu.add(0, 0, 0, R.string.Konfiguration);
 		menu.add(0, 1, 0, R.string.Listenansicht);
 
@@ -582,8 +489,6 @@ public class TUCMensa extends Activity implements OnGestureListener {
 			config();
 			return true;
 		case 1:
-
-			// ListView.IOinstance=IOinstance;
 
 			Intent it = new Intent(this, ListView.class);
 
@@ -603,8 +508,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		if (image_temo == null)
 			return;
 
-		ImageView image1;
-		image1 = (ImageView) findViewById(R.id.ImageView01);
+		ImageView image1 = (ImageView) findViewById(R.id.ImageView01);
 
 		image1.setImageBitmap(image_temo);
 
@@ -617,8 +521,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 		Essen element = getNodes().get(essen_position);
 
-		ImageView image1;
-		image1 = (ImageView) findViewById(R.id.ImageView01);
+		ImageView image1 = (ImageView) findViewById(R.id.ImageView01);
 
 		image1.setImageBitmap(Bitmap.createBitmap(100, 100,
 				Bitmap.Config.ALPHA_8));
@@ -699,6 +602,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 		if (nodes_temp == null)
 			return;
+
 		essen_position = (essen_position - 1 + nodes_temp.size())
 				% nodes_temp.size();
 		refresh();
@@ -719,6 +623,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 		if (nodes_temp == null)
 			return;
+
 		essen_position = (essen_position + 1) % nodes_temp.size();
 		refresh();
 
@@ -728,16 +633,81 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 * Startet die Konfiguration Activity
 	 */
 	private void config() {
+
 		config_update = true;
-		Intent it = new Intent(this, Preferences.class);
+		Intent itm = new Intent(this, Preferences.class);
 
-		startActivity(it);
+		startActivity(itm);
+	}
+	// ###########################################################################################
+	// ###########################################################################################
+	// ###########################################################################################
+	// ###########################################################################################
+	// Gesture Start
 
-		// A toast is a view containing a quick little message for the user.
-		// Toast.makeText(this,
-		// "Here you can maintain your user credentials.",
-		// Toast.LENGTH_LONG).show();
+	@Override
+	public boolean onTouchEvent(MotionEvent me)
+	{
+		return gestureScanner.onTouchEvent(me);
+	}
+
+	private boolean scrollstart = false;
+
+	@Override
+	public boolean onDown(MotionEvent e)
+	{
+		scrollstart = true;
+
+		return true;
 
 	}
 
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+			float velocityY) {
+		return true;
+	}
+
+	@Override
+	public void onLongPress(MotionEvent e) {
+
+	}
+
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+			float distanceY) {
+		if (!scrollstart) {
+			return true;
+		}
+		// If distanceX > 0: scroll in right direction
+		// If distanceX < 0: scroll in left direction
+
+		if (distanceX > 0) {
+			forwardnow();
+		}
+		if (distanceX < 0) {
+
+			backwardnow();
+		}
+
+		scrollstart = false;
+		return true;
+
+	}
+
+	@Override
+	public void onShowPress(MotionEvent e) {
+
+	}
+
+	@Override
+	public boolean onSingleTapUp(MotionEvent e) {
+		return true;
+	}
+	
+	// Gesture Ende
+	// ###########################################################################################
+	// ###########################################################################################
+	// ###########################################################################################
+	// ###########################################################################################
 }
