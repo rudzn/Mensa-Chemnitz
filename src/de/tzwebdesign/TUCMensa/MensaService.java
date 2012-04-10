@@ -255,7 +255,7 @@ public class MensaService extends Service {
 		getImage_status(imgName, false, isExistingCheck,
 				config.image_pixel_size);
 
-		return ioImage.readImage(imgName, config.image_pixel_size);
+		return getImage(imgName, isExistingCheck, config.image_pixel_size);
 
 	}
 

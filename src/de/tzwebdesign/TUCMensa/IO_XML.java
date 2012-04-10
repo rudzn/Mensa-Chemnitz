@@ -78,7 +78,7 @@ public class IO_XML {
 	 * @param Day
 	 * @return Dateiname
 	 */
-	public String getFilename_XML(String mensa, int Year, int Month, int Day) {
+	private String getFilename_XML(String mensa, int Year, int Month, int Day) {
 		String string = root.toString() + "/essenprev_"
 				+ fourDigitsNumberformat.format(Year) + "_"
 				+ twoDigitsNumberformat.format(Month) + "_"
@@ -190,7 +190,7 @@ public class IO_XML {
 	 * @return xml document
 	 * @throws CustomException
 	 */
-	public Document readXMLasXMLDocument(String mensa, int Year, int Month,
+	private Document readXMLasXMLDocument(String mensa, int Year, int Month,
 			int Day) throws CustomException {
 		synchronized (FileSync) {
 			try {
@@ -235,7 +235,7 @@ public class IO_XML {
 	 *            zu Speichernder Dateiinhalt
 	 * @throws CustomException
 	 */
-	public void SaveXML(int Year, int Month, int Day, String mensa, String data)
+	private void SaveXML(int Year, int Month, int Day, String mensa, String data)
 			throws CustomException {
 		synchronized (FileSync) {
 			try {
@@ -311,7 +311,7 @@ public class IO_XML {
 	 * @return XML als String
 	 * @throws CustomException
 	 */
-	public String readXMLasString(String mensa, int Year, int Month, int Day)
+	private String readXMLasString(String mensa, int Year, int Month, int Day)
 			throws CustomException {
 		synchronized (FileSync) {
 			try {

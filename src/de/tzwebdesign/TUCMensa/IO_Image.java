@@ -169,7 +169,7 @@ public class IO_Image {
 	 *            Bildgröße
 	 * @throws CustomException
 	 */
-	public synchronized void saveImage(String name, Bitmap image,
+	private synchronized void saveImage(String name, Bitmap image,
 			int image_pixel_size) throws CustomException {
 		try {
 
@@ -227,7 +227,7 @@ public class IO_Image {
 	 *            Bildgröße
 	 * @return Dateiname
 	 */
-	public String getFilename_Image(String name, int image_pixel_size) {
+	private String getFilename_Image(String name, int image_pixel_size) {
 
 		String string = root.toString() + "/essenprev_"
 				+ fourDigitsNumberformat.format(mensaService.getmYear()) + "_"
