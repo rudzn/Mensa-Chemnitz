@@ -1,6 +1,7 @@
 package de.tzwebdesign.TUCMensa;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import de.tzwebdesign.TUCMensa.MensaService.filestatus;
@@ -55,10 +56,14 @@ public class FileStatusManagement {
 	}
 
 	synchronized public void remove(String fileIn) {
-		for (InternalObject item : statusList) {
-			if (item.file.equals(fileIn))
-				statusList.remove(item);
-		}
+		// for (InternalObject item : statusList) {
+		// if (item.file.equals(fileIn))
+		// statusList.remove(item);
+		// }
+
+		for (Iterator<InternalObject> it = statusList.iterator(); it.hasNext();)
+			if (it.next().file.equals(fileIn))
+				it.remove();
 	}
 
 	synchronized public void setready(String fileIn) {
