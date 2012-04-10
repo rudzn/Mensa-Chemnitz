@@ -148,7 +148,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 	private GestureDetector gestureScanner;
 
-	private MensaService IOinstance;
+	private MensaService mensaService;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -189,7 +189,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 			// interact with the service. Because we have bound to a explicit
 			// service that we know is running in our own process, we can
 			// cast its IBinder to a concrete class and directly access it.
-			IOinstance = ((MensaService.LocalBinder) service).getService();
+			mensaService = ((MensaService.LocalBinder) service).getService();
 
 			Resume();
 
@@ -203,7 +203,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 			// unexpectedly disconnected -- that is, its process crashed.
 			// Because it is running in our same process, we should never
 			// see this happen.
-			IOinstance = null;
+			mensaService = null;
 
 			// Toast.makeText(TUCMensa.this,
 			// "local_service_disconnected",Toast.LENGTH_LONG).show();
@@ -240,17 +240,17 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 	private void Resume() {
 		get_pref();
-		if (config_update || IOinstance.checkdate()) {
+		if (config_update || mensaService.checkdate()) {
 			essen_position = 0;
 			config_update = false;
 
-			if (IOinstance.checkdate())
+			if (mensaService.checkdate())
 				ListViewShowed = false;
 
 			ladeService();
 
 		}
-		if (IOinstance.config.ListViewFirst && !ListViewShowed) {
+		if (mensaService.config.ListViewFirst && !ListViewShowed) {
 			startActivity(it);
 			// Toast.makeText(TUCMensa.this,"Starte Activity!",Toast.LENGTH_SHORT).show();
 		}
@@ -268,16 +268,16 @@ public class TUCMensa extends Activity implements OnGestureListener {
 			public void run() {
 				try {
 
-					setNodes(IOinstance.getXML(IOinstance.config.mensa, false));
+					setNodes(mensaService.getXML(false));
 					mHandler.post(showdataXML);
 
-					IOinstance.checkAllXML(IOinstance.config.mensa);
-					if (!IOinstance.config.ListViewFirst)
-						IOinstance.LoadAllXML(IOinstance.config.mensa);
+					mensaService.checkAllXML();
+					if (!mensaService.config.ListViewFirst)
+						mensaService.LoadAllXML();
 
 					try {
-						if (IOinstance.getXML_status(IOinstance.config.mensa, true, false) == status.Updated)
-							setNodes(IOinstance.getXML(IOinstance.config.mensa, false));
+						if (mensaService.getXML_status(true, false) == status.Updated)
+							setNodes(mensaService.getXML(false));
 
 					} catch (CustomException e) {
 						// Verwerfe
@@ -285,7 +285,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 					prepareAllImages();
 
-					IOinstance.deleteOldFiles();
+					mensaService.deleteOldFiles();
 
 					mHandler.post(completedloading);
 
@@ -371,12 +371,11 @@ public class TUCMensa extends Activity implements OnGestureListener {
 			public void run() {
 
 				try {
-					if (IOinstance.getImage_status(name, false, true,
-							IOinstance.config.image_pixel_size) == status.nonExisting)
+					if (mensaService.getImage_status(name, false, true) == status.nonExisting)
 						mHandler.post(PullImage_animation);
 
 					setimage(name,
-							IOinstance.getImage(name, false, IOinstance.config.image_pixel_size));
+							mensaService.getImage(name, false));
 					mHandler.post(PushImage);
 
 					mHandler.post(PullImage_animation_end);
@@ -402,7 +401,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 * vorbereitet/runterlädt
 	 */
 	private void prepareAllImages() {
-		if (!IOinstance.config.imageloading)
+		if (!mensaService.config.imageloading)
 			return;
 
 		Thread t = new Thread() {
@@ -418,8 +417,8 @@ public class TUCMensa extends Activity implements OnGestureListener {
 					// prepareImage(attribute.getValue(),i);
 
 					try {
-						IOinstance.getImage_status(attribute.getValue(), true,
-								false, IOinstance.config.image_pixel_size);
+						mensaService.getImage_status(attribute.getValue(), true,
+								false);
 					} catch (CustomException e) {
 						// Verwerfe
 					}
@@ -536,14 +535,12 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 */
 	private void get_pref() {
 
-		IOinstance.config.refresh();
-		
-		IOinstance.setdate();
+		mensaService.refreshconfig();
 
 
 
 		ImageView image1 = (ImageView) findViewById(R.id.ImageView01);
-		if (!IOinstance.config.imageSizeSmall) {
+		if (!mensaService.config.imageSizeSmall) {
 			RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
 					RelativeLayout.LayoutParams.FILL_PARENT,
 					RelativeLayout.LayoutParams.FILL_PARENT);
@@ -647,20 +644,20 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		// ////////////
 
 		TextView TextView_Data = (TextView) findViewById(R.id.TextView04);
-		if (IOinstance.config.sprache.equals("de")) {
-			TextView_Data.setText(twoDigitsNumberformat.format(IOinstance
+		if (mensaService.config.sprache.equals("de")) {
+			TextView_Data.setText(twoDigitsNumberformat.format(mensaService
 					.getmDay())
 					+ "."
-					+ twoDigitsNumberformat.format(IOinstance.getmMonth())
+					+ twoDigitsNumberformat.format(mensaService.getmMonth())
 					+ "."
-					+ fourDigitsNumberformat.format(IOinstance.getmYear()));
+					+ fourDigitsNumberformat.format(mensaService.getmYear()));
 		} else {
-			TextView_Data.setText(twoDigitsNumberformat.format(IOinstance
+			TextView_Data.setText(twoDigitsNumberformat.format(mensaService
 					.getmMonth())
 					+ "."
-					+ twoDigitsNumberformat.format(IOinstance.getmDay())
+					+ twoDigitsNumberformat.format(mensaService.getmDay())
 					+ "."
-					+ fourDigitsNumberformat.format(IOinstance.getmYear()));
+					+ fourDigitsNumberformat.format(mensaService.getmYear()));
 		}
 		// ////////////
 
@@ -671,7 +668,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 		// ////////////
 
-		attribute = (Attr) attrs.getNamedItem("preis" + IOinstance.config.preiskat);
+		attribute = (Attr) attrs.getNamedItem("preis" + mensaService.config.preiskat);
 		TextView TextView_Preis = (TextView) findViewById(R.id.TextView03);
 
 		TextView_Preis.setText(this.getString(R.string.Preiskat) + " "
@@ -681,7 +678,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		TextView TextView1 = (TextView) findViewById(R.id.TextView01);
 		attribute = (Attr) attrs.getNamedItem("eng");
 		String eng_essen = attribute.getValue();
-		if (IOinstance.config.sprache.equals("de") || eng_essen.length() == 0) {
+		if (mensaService.config.sprache.equals("de") || eng_essen.length() == 0) {
 
 			Element element = (Element) nodes_temp.item(essen_position);
 
