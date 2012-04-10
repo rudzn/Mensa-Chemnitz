@@ -35,6 +35,8 @@ public class IO_Image {
 	private final File root = new File(Environment
 			.getExternalStorageDirectory().toString() + "/TUCMensa");
 
+	private Object fileSempahor = new Object();
+
 	/**
 	 * Konstruktor
 	 */
@@ -129,33 +131,35 @@ public class IO_Image {
 	 * @return Bild
 	 * @throws CustomException
 	 */
-	public synchronized Bitmap readImage(int name, int image_pixel_size)
+	public Bitmap readImage(int name, int image_pixel_size)
 			throws CustomException {
+		synchronized (fileSempahor) {
 
-		Bitmap image = null;
-		try {
+			Bitmap image = null;
+			try {
 
-			File file = new File(getFilename_Image(name, image_pixel_size));
-			FileInputStream fileinput = new FileInputStream(file);
+				File file = new File(getFilename_Image(name, image_pixel_size));
+				FileInputStream fileinput = new FileInputStream(file);
 
-			BufferedInputStream buffered_input_stream = new BufferedInputStream(
-					fileinput);
-			image = BitmapFactory.decodeStream(buffered_input_stream);
+				BufferedInputStream buffered_input_stream = new BufferedInputStream(
+						fileinput);
+				image = BitmapFactory.decodeStream(buffered_input_stream);
 
-			fileinput.close();
-			buffered_input_stream.close();
+				fileinput.close();
+				buffered_input_stream.close();
 
-		} catch (IOException e) {
+			} catch (IOException e) {
 
-			// loadXMLintoRuntime_string = "IOException";
-			// return false;
-			throw new CustomException(errors.ImageReadError);
+				// loadXMLintoRuntime_string = "IOException";
+				// return false;
+				throw new CustomException(errors.ImageReadError);
 
+			}
+
+			// loadXMLintoRuntime_string = "";
+
+			return image;
 		}
-
-		// loadXMLintoRuntime_string = "";
-
-		return image;
 	}
 
 	/**
@@ -169,38 +173,40 @@ public class IO_Image {
 	 *            Bildgröße
 	 * @throws CustomException
 	 */
-	private synchronized void saveImage(int name, Bitmap image,
-			int image_pixel_size) throws CustomException {
-		try {
+	private void saveImage(int name, Bitmap image, int image_pixel_size)
+			throws CustomException {
+		synchronized (fileSempahor) {
 
-			if (Environment.getExternalStorageState().contains("mounted")) {
-				if (sdroot.canWrite()) {
+			try {
 
-					if (!root.exists()) {
-						mensaService.CreateDir();
+				if (Environment.getExternalStorageState().contains("mounted")) {
+					if (sdroot.canWrite()) {
+
+						if (!root.exists()) {
+							mensaService.CreateDir();
+						}
+
+						File gpxfile = new File(getFilename_Image(name,
+								image_pixel_size));
+
+						FileOutputStream fop = new FileOutputStream(gpxfile);
+
+						image.compress(Bitmap.CompressFormat.PNG, 100, fop);
+
+						fop.flush();
+						fop.close();
+
+					} else {
+						throw new CustomException(errors.WriteProtectedSD);
 					}
-
-					File gpxfile = new File(getFilename_Image(name,
-							image_pixel_size));
-
-					FileOutputStream fop = new FileOutputStream(gpxfile);
-
-					image.compress(Bitmap.CompressFormat.PNG, 100, fop);
-
-					fop.flush();
-					fop.close();
-
 				} else {
-					throw new CustomException(errors.WriteProtectedSD);
+					throw new CustomException(errors.MissingSD);
 				}
-			} else {
-				throw new CustomException(errors.MissingSD);
+
+			} catch (IOException g) {
+				throw new CustomException(errors.ImageWriteError);
 			}
-
-		} catch (IOException g) {
-			throw new CustomException(errors.ImageWriteError);
 		}
-
 	}
 
 	/**
@@ -212,10 +218,12 @@ public class IO_Image {
 	 *            Bildgröße
 	 * @return True wenn Bild existiert
 	 */
-	public synchronized boolean fileExists_Image(int name,
-			int image_pixel_size) {
+	public boolean fileExists_Image(int name, int image_pixel_size) {
+		synchronized (fileSempahor) {
 
-		return (new File(getFilename_Image(name, image_pixel_size))).exists();
+			return (new File(getFilename_Image(name, image_pixel_size)))
+					.exists();
+		}
 	}
 
 	/**
@@ -241,10 +249,13 @@ public class IO_Image {
 
 	/**
 	 * delete Image by Name
+	 * 
 	 * @param filename
 	 */
-	public synchronized void deleteXML(File file) {
+	public void deleteXML(File file) {
+		synchronized (fileSempahor) {
 
-		file.delete();
+			file.delete();
+		}
 	}
 }

@@ -26,15 +26,15 @@ public class MensaService extends Service {
 	private int mMonth;
 	private int mDay;
 
-	public int getmYear() {
+	public synchronized int getmYear() {
 		return mYear;
 	}
 
-	public int getmMonth() {
+	public synchronized int getmMonth() {
 		return mMonth;
 	}
 
-	public int getmDay() {
+	public synchronized int getmDay() {
 		return mDay;
 	}
 
@@ -42,7 +42,7 @@ public class MensaService extends Service {
 	 * Setzt die Datumsfelder unter einbeziehung des UserKonfigurierbaren
 	 * Offsets Wochenenden werden übersprungen
 	 */
-	private void setdate() {
+	private synchronized void setdate() {
 
 		Calendar c = Calendar.getInstance();
 
@@ -67,7 +67,7 @@ public class MensaService extends Service {
 	 * @return Liefert True wenn Datum von App mit neu berechnetem nicht
 	 *         übereinstimmt
 	 */
-	public boolean checkdate() {
+	public synchronized boolean checkdate() {
 
 		Calendar c = Calendar.getInstance();
 
@@ -107,7 +107,7 @@ public class MensaService extends Service {
 		refreshconfig();
 	}
 
-	public void refreshconfig() {
+	public synchronized void refreshconfig() {
 		if (config != null) {
 			config.refresh();
 
@@ -450,7 +450,7 @@ public class MensaService extends Service {
 	 * @return Essenliste
 	 * @throws CustomException
 	 */
-	public List<Essen> getEssenList(boolean isExistingCheck)
+	public synchronized List<Essen> getEssenList(boolean isExistingCheck)
 			throws CustomException {
 
 		return getEssenList(config.mensa, mYear, mMonth, mDay, isExistingCheck);
@@ -467,7 +467,7 @@ public class MensaService extends Service {
 	 * @return Essenliste
 	 * @throws CustomException
 	 */
-	public List<Essen> getEssenList(String mensa, boolean isExistingCheck)
+	public synchronized List<Essen> getEssenList(String mensa, boolean isExistingCheck)
 			throws CustomException {
 
 		return getEssenList(mensa, mYear, mMonth, mDay, isExistingCheck);
@@ -487,7 +487,7 @@ public class MensaService extends Service {
 	 * @return Essenliste
 	 * @throws CustomException
 	 */
-	public List<Essen> getEssenList(String mensa, int Year, int Month, int Day,
+	public synchronized List<Essen> getEssenList(String mensa, int Year, int Month, int Day,
 			boolean isExistingCheck) throws CustomException {
 
 		getXML_status(mensa, Year, Month, Day, false, isExistingCheck);
@@ -510,7 +510,7 @@ public class MensaService extends Service {
 	 * @return status
 	 * @throws CustomException
 	 */
-	public status getXML_status(boolean updateNow, boolean isExistingCheck)
+	public synchronized status getXML_status(boolean updateNow, boolean isExistingCheck)
 			throws CustomException {
 
 		return getXML_status(config.mensa, mYear, mMonth, mDay, updateNow,
@@ -533,7 +533,7 @@ public class MensaService extends Service {
 	 * @return status
 	 * @throws CustomException
 	 */
-	public status getXML_status(String mensa, boolean updateNow,
+	public synchronized status getXML_status(String mensa, boolean updateNow,
 			boolean isExistingCheck) throws CustomException {
 
 		return getXML_status(mensa, mYear, mMonth, mDay, updateNow,
@@ -625,7 +625,7 @@ public class MensaService extends Service {
 	/**
 	 * Löscht Bilder und Essenslisten die veraltet sind aus dem Speicher
 	 */
-	public void deleteOldFiles() {
+	public synchronized void deleteOldFiles() {
 
 		// Kann in nachfolgenden Versionen wieder weg
 		CreateDir(); // Reicht die .nomedia datei nach für allte installationen
@@ -741,7 +741,7 @@ public class MensaService extends Service {
 	 * 
 	 * @return true wenn daten aktualisert
 	 */
-	public boolean LoadAllXML() {
+	public synchronized boolean LoadAllXML() {
 		return LoadAllXML("rh") || LoadAllXML("st");
 	}
 
@@ -753,7 +753,7 @@ public class MensaService extends Service {
 	 *            rh oder st
 	 * @return true wenn daten aktualisert
 	 */
-	public boolean LoadAllXML(String mensa) {
+	public synchronized boolean LoadAllXML(String mensa) {
 		Calendar cal = new GregorianCalendar(mYear, mMonth - 1, mDay);
 		boolean stat = false;
 
@@ -792,7 +792,7 @@ public class MensaService extends Service {
 	 * @param mensa
 	 *            rh oder st
 	 */
-	public void checkAllXML() {
+	public synchronized void checkAllXML() {
 		checkAllXML("rh");
 		checkAllXML("st");
 	}
@@ -803,7 +803,7 @@ public class MensaService extends Service {
 	 * @param mensa
 	 *            rh oder st
 	 */
-	public void checkAllXML(String mensa) {
+	public synchronized void checkAllXML(String mensa) {
 		Calendar cal = new GregorianCalendar(mYear, mMonth - 1, mDay);
 
 		for (int i = 0; i < 15; i++) {

@@ -101,10 +101,11 @@ public class IO_XML {
 	 * @param Day
 	 * @return True wenn XML Datei vorhanden
 	 */
-	public synchronized boolean fileExists_XML(String mensa, int Year,
-			int Month, int Day) {
-
-		return (new File(getFilename_XML(mensa, Year, Month, Day))).exists();
+	public boolean fileExists_XML(String mensa, int Year, int Month, int Day) {
+		synchronized (FileSync) {
+			return (new File(getFilename_XML(mensa, Year, Month, Day)))
+					.exists();
+		}
 	}
 
 	/**
