@@ -65,10 +65,7 @@ public class MensaService extends Service {
 	 * Setzt die Datumsfelder unter einbeziehung des UserKonfigurierbaren
 	 * Offsets Wochenenden werden übersprungen
 	 */
-	public void setdate() {
-
-
-
+	private void setdate() {
 
 		Calendar c = Calendar.getInstance();
 
@@ -94,7 +91,6 @@ public class MensaService extends Service {
 	 *         übereinstimmt
 	 */
 	public boolean checkdate() {
-
 
 		Calendar c = Calendar.getInstance();
 
@@ -131,9 +127,19 @@ public class MensaService extends Service {
 
 	@Override
 	public void onCreate() {
-		SharedPreferences settings = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		config = new Configuration(settings);
+		refreshconfig();
+	}
+
+	public void refreshconfig() {
+		if (config != null) {
+			config.refresh();
+
+		} else {
+			SharedPreferences settings = PreferenceManager
+					.getDefaultSharedPreferences(this);
+			config = new Configuration(settings);
+
+		}
 		setdate();
 	}
 
@@ -175,6 +181,21 @@ public class MensaService extends Service {
 	// ###########################################################################################
 
 	/**
+	 * Image file Status Objekt
+	 */
+	private FileStatusManagement imagefileStatusObject = new FileStatusManagement();
+
+	/**
+	 * Objekt zur verwaltung gerade in arbeit befindlicher Bilder
+	 */
+	private FileWorking imageFileWorking = new FileWorking();
+
+	/**
+	 * Objekt zur verwaltung gerade in arbeit befindlicher XML Dateien
+	 */
+	private FileWorking xmlFileWorking = new FileWorking();
+
+	/**
 	 * Pfad zur SD Karte
 	 */
 	private final File sdroot = new File(Environment
@@ -186,9 +207,8 @@ public class MensaService extends Service {
 	private final File root = new File(Environment
 			.getExternalStorageDirectory().toString() + "/TUCMensa");
 
-	// TODO lieber jedesmal vor speicher verwendung checken, statt hier nur bei
-	// Service-Start Status zu entnehmen?
-	private String storage_state = Environment.getExternalStorageState();
+	private IO_XML ioXML = new IO_XML(this);
+	private IO_Image ioImage = new IO_Image(this);
 
 	private NumberFormat twoDigitsNumberformat = NumberFormat.getInstance();
 	private NumberFormat fourDigitsNumberformat = NumberFormat.getInstance();
@@ -220,14 +240,24 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Objekt zur verwaltung gerade in arbeit befindlicher Bilder
+	 * Liefert Bild
+	 * 
+	 * @param imgName
+	 *            Bildname
+	 * @param isExistingCheck
+	 *            Bild nicht nachladen wenn fehlend
+	 * @return Bild
+	 * @throws CustomException
 	 */
-	private FileWorking imageFileWorking = new FileWorking();
+	public Bitmap getImage(String imgName, boolean isExistingCheck)
+			throws CustomException {
 
-	/**
-	 * Image file Status Objekt
-	 */
-	private FileStatusManagement imagefileStatusObject = new FileStatusManagement();
+		getImage_status(imgName, false, isExistingCheck,
+				config.image_pixel_size);
+
+		return ioImage.readImage(imgName, config.image_pixel_size);
+
+	}
 
 	/**
 	 * Liefert Bild
@@ -246,7 +276,7 @@ public class MensaService extends Service {
 
 		getImage_status(imgName, false, isExistingCheck, image_pixel_size);
 
-		return readImage(imgName, image_pixel_size);
+		return ioImage.readImage(imgName, image_pixel_size);
 
 	}
 
@@ -282,14 +312,16 @@ public class MensaService extends Service {
 
 		if (imageFileWorking.start(imgNameWithSize)) {
 
-			if (!fileExists_Image(imgName, image_pixel_size) || updateNow) {
+			if (!ioImage.fileExists_Image(imgName, image_pixel_size)
+					|| updateNow) {
 				if (isExistingCheck) {
 					imageFileWorking.remove(imgNameWithSize);
 					return status.nonExisting;
 				}
 
 				try {
-					Boolean stat = loadIMAGEtoSD(imgName, image_pixel_size);
+					Boolean stat = ioImage.loadIMAGEtoSD(imgName,
+							image_pixel_size);
 					imagefileStatusObject.setupdated(imgNameWithSize);
 					imageFileWorking.remove(imgNameWithSize);
 					if (stat)
@@ -307,6 +339,27 @@ public class MensaService extends Service {
 			return status.Existing;
 		}
 		return status.working;
+	}
+
+	/**
+	 * Liefert den Bildstatus und Läd es wenn nötig nach (je nach parameter)
+	 * 
+	 * @param imgName
+	 *            Bildname
+	 * @param updateNow
+	 *            aktualisiert Bild
+	 * @param isExistingCheck
+	 *            Wenn nicht vorhanden auch nicht nachladen (überschreibt
+	 *            updateNow)
+	 * @return Status
+	 * @throws CustomException
+	 */
+	public status getImage_status(String imgName, boolean updateNow,
+			boolean isExistingCheck) throws CustomException {
+
+		return getImage_status(imgName, updateNow, isExistingCheck,
+				config.image_pixel_size);
+
 	}
 
 	/**
@@ -348,197 +401,7 @@ public class MensaService extends Service {
 
 	}
 
-	/**
-	 * Prüft ob Bild vorhanden
-	 * 
-	 * @param name
-	 *            Bildname
-	 * @param image_pixel_size
-	 *            Bildgröße
-	 * @return True wenn Bild existiert
-	 */
-	private synchronized boolean fileExists_Image(String name,
-			int image_pixel_size) {
-
-		return (new File(getFilename_Image(name, image_pixel_size))).exists();
-	}
-
-	/**
-	 * Erzeugt Dateinamen für Bild
-	 * 
-	 * @param name
-	 *            Bildname
-	 * @param image_pixel_size
-	 *            Bildgröße
-	 * @return Dateiname
-	 */
-	private String getFilename_Image(String name, int image_pixel_size) {
-
-		String string = root.toString() + "/essenprev_"
-				+ fourDigitsNumberformat.format(mYear) + "_"
-				+ twoDigitsNumberformat.format(mMonth) + "_"
-				+ twoDigitsNumberformat.format(mDay) + "-"
-				+ fourDigitsNumberformat.format(Integer.parseInt(name)) + "_"
-				+ fourDigitsNumberformat.format(image_pixel_size) + ".png";
-		return string;
-
-	}
-
 	// private String loadIMAGEtoSD_string = "";
-
-	/**
-	 * Lädt Bild aus Netz und speichert es auf SD
-	 * 
-	 * @param name
-	 *            Bildname
-	 * @param image_pixel_size
-	 *            Bildgröße
-	 * @throws CustomException
-	 */
-	private boolean loadIMAGEtoSD(String name, int image_pixel_size)
-			throws CustomException {
-
-		String image_pixel_size_string;
-		try {
-			if (image_pixel_size == 190)
-				image_pixel_size_string = "";
-			else
-				image_pixel_size_string = "_" + image_pixel_size;
-			String url = "http://www-user.tu-chemnitz.de/~fnor/mensa/bilder"
-					+ image_pixel_size_string + "/" + name + ".png";
-			URL aURL;
-
-			aURL = new URL(url);
-
-			URLConnection conn = aURL.openConnection();
-			conn.setConnectTimeout(10000);
-			conn.connect();
-
-			InputStream input_stream = conn.getInputStream();
-
-			BufferedInputStream buffered_input_stream = new BufferedInputStream(
-					input_stream);
-			Bitmap image = BitmapFactory.decodeStream(input_stream);
-			if (image == null)
-				throw new CustomException(errors.ImageDownloadError);
-
-			buffered_input_stream.close();
-			input_stream.close();
-
-			// TODO
-			// Not IMPLEMENTED: Vergleich ob datei neu. da nie nach neuer
-			// gesucht wird hier nicht implementiert
-			// if(fileExists_Image(name) && readImage(name).equals(image))
-			// {
-			// return false;
-
-			// }
-			saveImage(name, image, image_pixel_size);
-			// return true;
-			return false;// Folglich immer False...
-
-		} catch (MalformedURLException e) {
-
-			throw new CustomException(errors.URLError);
-
-		} catch (IOException e) {
-
-			throw new CustomException(errors.ConnectionError);
-
-		}
-		// loadIMAGEtoSD_string = "";
-		// return true;
-
-	}
-
-	/**
-	 * Speichert Bild auf SD
-	 * 
-	 * @param name
-	 *            Bildname
-	 * @param image
-	 *            Bild
-	 * @param image_pixel_size
-	 *            Bildgröße
-	 * @throws CustomException
-	 */
-	private synchronized void saveImage(String name, Bitmap image,
-			int image_pixel_size) throws CustomException {
-		try {
-
-			if (storage_state.contains("mounted")) {
-				if (sdroot.canWrite()) {
-
-					if (!root.exists()) {
-						CreateDir();
-					}
-
-					File gpxfile = new File(getFilename_Image(name,
-							image_pixel_size));
-
-					FileOutputStream fop = new FileOutputStream(gpxfile);
-
-					image.compress(Bitmap.CompressFormat.PNG, 100, fop);
-
-					fop.flush();
-					fop.close();
-
-				} else {
-					throw new CustomException(errors.WriteProtectedSD);
-				}
-			} else {
-				throw new CustomException(errors.MissingSD);
-			}
-
-		} catch (IOException g) {
-			throw new CustomException(errors.ImageWriteError);
-		}
-
-	}
-
-	/**
-	 * Liest Bild von SD
-	 * 
-	 * @param name
-	 *            Bildname
-	 * @param image_pixel_size
-	 *            Bildgröße
-	 * @return Bild
-	 * @throws CustomException
-	 */
-	private synchronized Bitmap readImage(String name, int image_pixel_size)
-			throws CustomException {
-
-		Bitmap image = null;
-		try {
-
-			File file = new File(getFilename_Image(name, image_pixel_size));
-			FileInputStream fileinput = new FileInputStream(file);
-
-			BufferedInputStream buffered_input_stream = new BufferedInputStream(
-					fileinput);
-			image = BitmapFactory.decodeStream(buffered_input_stream);
-
-			fileinput.close();
-			buffered_input_stream.close();
-
-		} catch (IOException e) {
-
-			// loadXMLintoRuntime_string = "IOException";
-			// return false;
-			throw new CustomException(errors.ImageReadError);
-
-		}
-
-		// loadXMLintoRuntime_string = "";
-
-		return image;
-	}
-
-	/**
-	 * Objekt zur verwaltung gerade in arbeit befindlicher XML Dateien
-	 */
-	private FileWorking xmlFileWorking = new FileWorking();
 
 	public enum filestatus {
 		ready, updated
@@ -579,14 +442,16 @@ public class MensaService extends Service {
 
 		if (xmlFileWorking.start(mensa + inYear + inMonth + inDay)) {
 
-			if (updateNow || !fileExists_XML(mensa, inYear, inMonth, inDay)) {
+			if (updateNow
+					|| !ioXML.fileExists_XML(mensa, inYear, inMonth, inDay)) {
 				if (isExistingCheck) {
 					xmlFileWorking.remove(mensa + inYear + inMonth + inDay);
 					return status.nonExisting;
 				}
 
 				try {
-					Boolean stat = loadXMLtoSD(mensa, inYear, inMonth, inDay);
+					Boolean stat = ioXML.loadXMLtoSD(mensa, inYear, inMonth,
+							inDay);
 					xmlfileStatusObject.setupdated("" + inYear + inMonth
 							+ inDay + mensa);
 					xmlFileWorking.remove(mensa + inYear + inMonth + inDay);
@@ -605,6 +470,20 @@ public class MensaService extends Service {
 			return status.Existing;
 		}
 		return status.working;
+	}
+
+	/**
+	 * Liefert XML des in der App aktellen Datums (Berechnets Datum)
+	 * 
+	 * @param isExistingCheck
+	 *            True unterdrückt aktualisierung, prüft nur existens
+	 * @return nodelist
+	 * @throws CustomException
+	 */
+	public NodeList getXML(boolean isExistingCheck) throws CustomException {
+
+		return getXML(config.mensa, mYear, mMonth, mDay, isExistingCheck);
+
 	}
 
 	/**
@@ -642,8 +521,29 @@ public class MensaService extends Service {
 
 		getXML_status(mensa, Year, Month, Day, false, isExistingCheck);
 
-		return readXMLasNodeList(mensa, Year, Month, Day);
+		return ioXML.readXMLasNodeList(mensa, Year, Month, Day);
 
+	}
+
+	/**
+	 * Prüft ob Datei vorhanden (für aktuelles App Datum), wenn nicht wird sie
+	 * aus Netz gelden. Dabei wird gewartet das ein Slot zur bearbeitung frei
+	 * wird
+	 * 
+	 * @param updateNow
+	 *            Wenn True wird die Datei aktualisiert (auch wenn schon
+	 *            vorhanden)
+	 * @param isExistingCheck
+	 *            Wenn True wird keine aktualisierung durchgeführt, sonern nur
+	 *            auf existenz überprüft (überschreibt updateNow)
+	 * @return status
+	 * @throws CustomException
+	 */
+	public status getXML_status(boolean updateNow, boolean isExistingCheck)
+			throws CustomException {
+
+		return getXML_status(config.mensa, mYear, mMonth, mDay, updateNow,
+				isExistingCheck);
 	}
 
 	/**
@@ -667,6 +567,31 @@ public class MensaService extends Service {
 
 		return getXML_status(mensa, mYear, mMonth, mDay, updateNow,
 				isExistingCheck);
+	}
+
+	/**
+	 * Prüft ob Datei vorhanden (für Datum von prameter), wenn nicht wird sie
+	 * aus Netz geladen. Dabei wird gewartet das ein Slot zur bearbeitung frei
+	 * wird
+	 * 
+	 * @param Year
+	 * @param Month
+	 * @param Day
+	 * @param updateNow
+	 *            Wenn True wird die Datei aktualisiert (auch wenn schon
+	 *            vorhanden)
+	 * @param isExistingCheck
+	 *            Wenn True wird keine aktualisierung vorgenommen sondern nur
+	 *            die existenz geprüft (überschreibt updateNow)
+	 * @return status
+	 * @throws CustomException
+	 */
+	public status getXML_status(int Year, int Month, int Day,
+			boolean updateNow, boolean isExistingCheck) throws CustomException {
+
+		return getXML_status(config.mensa, Year, Month, Day, updateNow,
+				isExistingCheck);
+
 	}
 
 	/**
@@ -711,199 +636,9 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Lädt XML und speichert auf SD
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 * @return True wenn speichern ohne fehler
-	 * @throws CustomException
-	 */
-	private boolean loadXMLtoSD(String mensa, int Year, int Month, int Day)
-			throws CustomException {
-		if (mensa == "st")
-			mensa = "strana";
-		try {
-			String url = "http://www-user.tu-chemnitz.de/~fnor/mensa/webservice_xml_2.php?mensa="
-					+ mensa
-					+ "&tag="
-					+ Day
-					+ "&monat="
-					+ Month
-					+ "&jahr="
-					+ Year;
-
-			URL aURL;
-
-			aURL = new URL(url);
-
-			URLConnection conn = aURL.openConnection();
-			conn.setConnectTimeout(10000);
-			conn.connect();
-
-			InputStream is = conn.getInputStream();
-			BufferedInputStream bis = new BufferedInputStream(is);
-
-			StringBuilder sb = new StringBuilder();
-
-			String line;
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					is, "UTF-8"));
-
-			while ((line = reader.readLine()) != null) {
-
-				sb.append(line);
-
-			}
-
-			bis.close();
-			is.close();
-
-			String hm = sb.toString();
-			if (!hm.contains("<essen")) {
-
-				throw new CustomException(errors.XMLNoEssenFound);
-			}
-
-			if (fileExists_XML(mensa, Year, Month, Day)
-					&& readXMLasString(mensa, Year, Month, Day).equals(hm)) {
-				return false;
-
-			}
-			SaveXML(Year, Month, Day, mensa, hm);
-			return true;
-
-		} catch (MalformedURLException e) {
-
-			throw new CustomException(errors.URLError);
-
-		} catch (IOException e) {
-
-			throw new CustomException(errors.ConnectionError);
-		}
-	}
-
-	/**
-	 * Prüft ob XML Datei vorhanden
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 * @return True wenn XML Datei vorhanden
-	 */
-	private synchronized boolean fileExists_XML(String mensa, int Year,
-			int Month, int Day) {
-
-		return (new File(getFilename_XML(mensa, Year, Month, Day))).exists();
-	}
-
-	/**
-	 * Erzeugt den Speicher-Dateinamen für XML Datei
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 * @return Dateiname
-	 */
-	private String getFilename_XML(String mensa, int Year, int Month, int Day) {
-		String string = root.toString() + "/essenprev_"
-				+ fourDigitsNumberformat.format(Year) + "_"
-				+ twoDigitsNumberformat.format(Month) + "_"
-				+ twoDigitsNumberformat.format(Day) + "_" + mensa + ".xml";
-		return string;
-
-	}
-
-	private Object FileSync = new Object();
-
-	/**
-	 * Speichert data als XMl Datei auf SD
-	 * 
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 * @param mensa
-	 *            rh oder st
-	 * @param data
-	 *            zu Speichernder Dateiinhalt
-	 * @throws CustomException
-	 */
-	private void SaveXML(int Year, int Month, int Day, String mensa, String data)
-			throws CustomException {
-		synchronized (FileSync) {
-			try {
-				if (storage_state.contains("mounted")) {
-
-					if (sdroot.canWrite()) {
-
-						if (!root.exists()) {
-							CreateDir();
-						}
-						// new AlertDialog.Builder(this)
-						// .setTitle("Fehler")
-						// .setMessage(
-						// "Cache Ordner konnte nicht erstellt werden!")
-						// .show();
-						// }
-
-						File gpxfile = new File(getFilename_XML(mensa, Year,
-								Month, Day));
-
-						// Create file
-						FileWriter fstream;
-
-						fstream = new FileWriter(gpxfile);
-
-						BufferedWriter out = new BufferedWriter(fstream);
-						out.write(data);
-						// Close the output stream
-						out.close();
-					} else {
-						// new AlertDialog.Builder(this)
-						// .setTitle("Fehler")
-						// .setMessage(
-						// "Keine Schreibrechte auf SD Karte!")
-						// .show();
-
-						// loadIMAGEtoSD_string =
-						// "Keine Schreibrechte auf SD Karte!";
-						// return false;
-
-						throw new CustomException(errors.WriteProtectedSD);
-
-					}
-				} else {
-					// new AlertDialog.Builder(this)
-					// .setTitle("Fehler")
-					// .setMessage(
-					// "Keine SD Karte gefunden! Bild nicht gecached!")
-					// .show();
-
-					// loadIMAGEtoSD_string = "Keine SD Karte gefunden!";
-					// return false;
-					throw new CustomException(errors.MissingSD);
-
-				}
-
-			} catch (IOException e) {
-				throw new CustomException(errors.XMLWriteError);
-			}
-
-			// return true;
-		}
-	}
-
-	/**
 	 * Legt Mensa App Verzeichnis auf SD Karte an
 	 */
-	private void CreateDir() {
+	public void CreateDir() {
 
 		root.mkdir();
 
@@ -917,107 +652,6 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Liest Essen aus XML Datei für bestimmtes Datum
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 * @return nodelist
-	 * @throws CustomException
-	 */
-	private NodeList readXMLasNodeList(String mensa, int Year, int Month,
-			int Day) throws CustomException {
-
-		Document doc = readXMLasXMLDocument(mensa, Year, Month, Day);
-		NodeList nodes = doc.getElementsByTagName("essen");
-		return nodes;
-
-	}
-
-	/**
-	 * Liest XML Datei von SD
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 * @return xml document
-	 * @throws CustomException
-	 */
-	private Document readXMLasXMLDocument(String mensa, int Year, int Month,
-			int Day) throws CustomException {
-		synchronized (FileSync) {
-			try {
-
-				String path = getFilename_XML(mensa, Year, Month, Day);
-
-				FileInputStream fileinput;
-				fileinput = new FileInputStream(path);
-				BufferedInputStream buffered_input_stream = new BufferedInputStream(
-						fileinput);
-
-				DocumentBuilderFactory dbf = DocumentBuilderFactory
-						.newInstance();
-				DocumentBuilder db = dbf.newDocumentBuilder();
-				Document doc = db.parse(buffered_input_stream);
-				doc.getDocumentElement().normalize();
-				// System.out.println("Root element " +
-				// doc.getDocumentElement().getNodeName());
-				return doc;
-			} catch (FileNotFoundException e) {
-				throw new CustomException(errors.XMLReadError);
-			} catch (ParserConfigurationException e) {
-				throw new CustomException(errors.XMLParserError);
-			} catch (SAXException e) {
-				throw new CustomException(errors.XMLSAXError);
-			} catch (IOException e) {
-				throw new CustomException(errors.XMLIOError);
-			}
-
-		}
-	}
-
-	/**
-	 * Liest XML Datei von SD als String
-	 * 
-	 * @param mensa
-	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
-	 * @return XML als String
-	 * @throws CustomException
-	 */
-	private String readXMLasString(String mensa, int Year, int Month, int Day)
-			throws CustomException {
-		synchronized (FileSync) {
-			try {
-
-				String path = getFilename_XML(mensa, Year, Month, Day);
-
-				BufferedReader br = new BufferedReader(new InputStreamReader(
-						new FileInputStream(path)));
-				StringBuffer contentOfFile = new StringBuffer();
-				String line;
-				while ((line = br.readLine()) != null) {
-					contentOfFile.append(line);
-				}
-				String content = contentOfFile.toString();
-
-				return content;
-			} catch (FileNotFoundException e) {
-				throw new CustomException(errors.XMLReadError);
-			} catch (IOException e) {
-				throw new CustomException(errors.XMLIOError);
-			}
-
-		}
-	}
-
-	/**
 	 * Löscht Bilder und Essenslisten die veraltet sind aus dem Speicher
 	 */
 	public void deleteOldFiles() {
@@ -1027,7 +661,7 @@ public class MensaService extends Service {
 
 		Calendar caldel = new GregorianCalendar(mYear, mMonth, mDay);
 
-		if (storage_state.contains("mounted")) {
+		if (Environment.getExternalStorageState().contains("mounted")) {
 			if (root.canWrite()) {
 
 				if (root.isDirectory()) {
@@ -1096,31 +730,28 @@ public class MensaService extends Service {
 										u2year, u2month, u2day);
 
 								if (caldel.compareTo(caldel2) == 1) {
-									synchronized (FileSync) {
 
-										if (MimeType.equals("xml")
-												&& xmlFileWorking.start(""
-														+ u2mensa + u2year
-														+ u2month + u2day)) {
-											xmlfileStatusObject.remove(""
-													+ u2year + u2month + u2day
-													+ u2mensa);
-											filelist_of_cache[i].delete();
-											xmlFileWorking.remove("" + u2mensa
-													+ u2year + u2month + u2day);
-										}
-										if (MimeType.equals("png")
-												&& imageFileWorking
-														.start(imgName + "_"
-																+ imgpixelSize)) {
-											imagefileStatusObject
-													.remove(imgName + "_"
-															+ imgpixelSize);
-											filelist_of_cache[i].delete();
-											imageFileWorking.remove(imgName
-													+ imgpixelSize);
-										}
+									if (MimeType.equals("xml")
+											&& xmlFileWorking.start(""
+													+ u2mensa + u2year
+													+ u2month + u2day)) {
+										xmlfileStatusObject.remove("" + u2year
+												+ u2month + u2day + u2mensa);
+										ioXML.deleteXML(filelist_of_cache[i]);
+
+										xmlFileWorking.remove("" + u2mensa
+												+ u2year + u2month + u2day);
 									}
+									if (MimeType.equals("png")
+											&& imageFileWorking.start(imgName
+													+ "_" + imgpixelSize)) {
+										imagefileStatusObject.remove(imgName
+												+ "_" + imgpixelSize);
+										ioImage.deleteXML(filelist_of_cache[i]);
+										imageFileWorking.remove(imgName
+												+ imgpixelSize);
+									}
+
 								}
 							}
 						} catch (Exception e) {
@@ -1131,6 +762,16 @@ public class MensaService extends Service {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Lädt so lange XML Dateien (Essenstage) aus dem netz bis keine mehr
+	 * vorliegen / aktualisiert bestehende
+	 * 
+	 * @return true wenn daten aktualisert
+	 */
+	public boolean LoadAllXML() {
+		return LoadAllXML("rh") || LoadAllXML("st");
 	}
 
 	/**
@@ -1180,6 +821,17 @@ public class MensaService extends Service {
 	 * @param mensa
 	 *            rh oder st
 	 */
+	public void checkAllXML() {
+		checkAllXML("rh");
+		checkAllXML("st");
+	}
+
+	/**
+	 * Erzeugt den Statusspeicher über XML Dateien
+	 * 
+	 * @param mensa
+	 *            rh oder st
+	 */
 	public void checkAllXML(String mensa) {
 		Calendar cal = new GregorianCalendar(mYear, mMonth - 1, mDay);
 
@@ -1209,4 +861,5 @@ public class MensaService extends Service {
 		}
 
 	}
+
 }
