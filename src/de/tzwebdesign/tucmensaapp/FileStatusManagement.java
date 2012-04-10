@@ -1,10 +1,10 @@
-package de.tzwebdesign.TUCMensa;
+package de.tzwebdesign.tucmensaapp;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import de.tzwebdesign.TUCMensa.MensaService.filestatus;
+import de.tzwebdesign.tucmensaapp.MensaService.filestatus;
 
 /**
  * Klasse zur Filestatus speicherung

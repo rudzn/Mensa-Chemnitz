@@ -1,4 +1,4 @@
-package de.tzwebdesign.TUCMensa;
+package de.tzwebdesign.tucmensaapp;
 
 import java.util.ArrayList;
 import java.util.List;

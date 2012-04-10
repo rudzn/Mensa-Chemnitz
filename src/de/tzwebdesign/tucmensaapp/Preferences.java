@@ -1,5 +1,6 @@
-package de.tzwebdesign.TUCMensa;
+package de.tzwebdesign.tucmensaapp;
 
+import de.tzwebdesign.tucmensaapp.R;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;

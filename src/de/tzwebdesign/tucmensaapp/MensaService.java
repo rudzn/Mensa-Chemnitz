@@ -1,38 +1,19 @@
-package de.tzwebdesign.TUCMensa;
+package de.tzwebdesign.tucmensaapp;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import de.tzwebdesign.TUCMensa.CustomException.errors;
+import de.tzwebdesign.tucmensaapp.CustomException.errors;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
@@ -40,11 +21,6 @@ import android.preference.PreferenceManager;
 
 public class MensaService extends Service {
 
-	/**
-	 * Zeitversatz in Stunden um den der nächste Tag vorgezogen wird in der
-	 * Anzeige
-	 */
-	private int offset;
 
 	private int mYear;
 	private int mMonth;
@@ -196,11 +172,6 @@ public class MensaService extends Service {
 	 */
 	private FileWorking xmlFileWorking = new FileWorking();
 
-	/**
-	 * Pfad zur SD Karte
-	 */
-	private final File sdroot = new File(Environment
-			.getExternalStorageDirectory().toString());
 
 	/**
 	 * Pfad zum App Ordner auf SD Karte
@@ -300,8 +271,7 @@ public class MensaService extends Service {
 			boolean isExistingCheck, int image_pixel_size)
 			throws CustomException {
 
-		String imgNameWithSize = fourDigitsNumberformat.format(imgName)
-				+ "_"
+		String imgNameWithSize = fourDigitsNumberformat.format(imgName) + "_"
 				+ fourDigitsNumberformat.format(image_pixel_size);
 
 		if (imagefileStatusObject.isUpdated(imgNameWithSize))
@@ -480,7 +450,8 @@ public class MensaService extends Service {
 	 * @return Essenliste
 	 * @throws CustomException
 	 */
-	public List<Essen> getEssenList(boolean isExistingCheck) throws CustomException {
+	public List<Essen> getEssenList(boolean isExistingCheck)
+			throws CustomException {
 
 		return getEssenList(config.mensa, mYear, mMonth, mDay, isExistingCheck);
 

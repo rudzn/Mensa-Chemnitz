@@ -1,44 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="Offset">Next Day</string>
-    <string name="Activityname_listview">Mensa Chemnitz list</string><string name="Offset_text">hours before midnight</string>
+    <string name="Activityname_listview">Mensa Chemnitz list</string>
+    <string name="Offset_text">hours before midnight</string>
     <string name="essen_datum"></string>
     <string name="euro"></string>
     <string name="sprache">Language:</string>
-    <string name="save">Save</string>
-    
-    
     <string name="mensa">Mensa:</string>
     <string name="Preiskat">Price: </string>
-    <string name="essen_name">Loading...</string>
+    <string name="essen_name">Loading&amp;#8230;</string>
     <string name="essen_text"></string>
-    
     <string name="app_name">Mensa Chemnitz</string>
-    
-    <string name="mensa_prompt">Choose Mensa</string>
-
-<string name="Konfiguration">Configuration</string>
-<string name="Beenden">Exit</string>
-
-<string name="Activityname_main">Mensa Chemnitz</string>
-<string name="sprache_default">en</string>
-
-
-<string name="Activityname_pref">Mensa Chemnitz Preferences</string>
-<string name="Listenansicht">Show list</string>
-
-<string name="imageloading">Image preload</string>
-<string name="imageloading_text">Load all today images at once</string>
-
-<string name="imagesize">Images in original size</string>
-<string name="imagesize_text">Do not scale Image</string>
-
-<string name="ListViewFirst">ListView</string>
-<string name="ListViewFirst_text">Load ListView as default</string>
-
-<string name="findNewEssen">Plan updated!</string>
-
-<string name="image_pixel_size">Better image quality</string>
-<string name="image_pixel_size_text">(not all at the moment)</string>
+    <string name="Konfiguration">Configuration</string>
+    <string name="Activityname_main">Mensa Chemnitz</string>
+    <string name="sprache_default">en</string>
+    <string name="Activityname_pref">Mensa Chemnitz Preferences</string>
+    <string name="Listenansicht">Show list</string>
+    <string name="imageloading">Image preload</string>
+    <string name="imageloading_text">Load all today images at once</string>
+    <string name="imagesize">Images in original size</string>
+    <string name="imagesize_text">Do not scale Image</string>
+    <string name="ListViewFirst">ListView</string>
+    <string name="ListViewFirst_text">Load ListView as default</string>
+    <string name="findNewEssen">Plan updated!</string>
+    <string name="image_pixel_size">Better image quality</string>
+    <string name="image_pixel_size_text">(not all at the moment)</string>
+    <string name="ImageViewdesc">shows Image for Meal</string>
+    <string name="Buttontextback">backward</string>
+    <string name="Buttontextforward">forward</string>
 
 </resources>

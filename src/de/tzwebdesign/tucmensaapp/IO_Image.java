@@ -1,4 +1,4 @@
-package de.tzwebdesign.TUCMensa;
+package de.tzwebdesign.tucmensaapp;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -14,7 +14,7 @@ import java.text.NumberFormat;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
-import de.tzwebdesign.TUCMensa.CustomException.errors;
+import de.tzwebdesign.tucmensaapp.CustomException.errors;
 
 public class IO_Image {
 

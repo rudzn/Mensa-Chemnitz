@@ -1,15 +1,10 @@
-package de.tzwebdesign.TUCMensa;
+package de.tzwebdesign.tucmensaapp;
 
 import java.text.NumberFormat;
 import java.util.List;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
-
-import de.tzwebdesign.TUCMensa.MensaService.status;
-import de.tzwebdesign.TUCMensa.R;
+import de.tzwebdesign.tucmensaapp.R;
+import de.tzwebdesign.tucmensaapp.MensaService.status;
 
 import android.app.Activity;
 
@@ -17,7 +12,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 
 import android.graphics.Bitmap;
 
@@ -25,7 +19,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 
 import android.os.Handler;
-import android.preference.PreferenceManager;
 
 import android.view.GestureDetector;
 import android.view.Menu;

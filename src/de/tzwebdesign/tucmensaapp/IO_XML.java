@@ -1,4 +1,4 @@
-package de.tzwebdesign.TUCMensa;
+package de.tzwebdesign.tucmensaapp;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
 
 import android.os.Environment;
 
-import de.tzwebdesign.TUCMensa.CustomException.errors;
+import de.tzwebdesign.tucmensaapp.CustomException.errors;
 
 public class IO_XML {
 
@@ -383,16 +383,16 @@ public class IO_XML {
 			name = attribute.getValue();
 
 			attribute = (Attr) attrs.getNamedItem("number");
-			nummer = (new Integer(attribute.getValue()));
+			nummer = Integer.valueOf(attribute.getValue());
 
 			text = nodes_temp.item(essen_position).getFirstChild()
 					.getNodeValue().trim();
 
 			attribute = (Attr) attrs.getNamedItem("bild");
-			bildnummer = (new Integer(attribute.getValue()));
+			bildnummer = Integer.valueOf(attribute.getValue());
 
 			attribute = (Attr) attrs.getNamedItem("wertung");
-			wertung = (new Integer(attribute.getValue()));
+			wertung = Integer.valueOf(attribute.getValue());
 
 			attribute = (Attr) attrs.getNamedItem("preisg");
 			preisgast = attribute.getValue();

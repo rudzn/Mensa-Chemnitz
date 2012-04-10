@@ -1,4 +1,4 @@
-package de.tzwebdesign.TUCMensa;
+package de.tzwebdesign.tucmensaapp;
 
 import java.io.File;
 
@@ -6,11 +6,9 @@ import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.List;
 
-import org.w3c.dom.Attr;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
+
+import de.tzwebdesign.tucmensaapp.R;
 
 import android.app.Activity;
 

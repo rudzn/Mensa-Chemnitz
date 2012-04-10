@@ -17,6 +17,7 @@
 </RelativeLayout>
 
 <ImageView 
+android:contentDescription="@string/ImageViewdesc"
 android:id="@+id/ImageView01" 
 android:layout_centerHorizontal="true" 
 android:layout_below="@+id/TextView04" android:layout_above="@+id/TextView01" android:layout_marginLeft="10dip" android:layout_marginRight="10dip" android:layout_width="wrap_content" android:layout_height="wrap_content">
@@ -62,7 +63,7 @@ android:layout_alignParentRight="true" android:layout_marginTop="10dip" android:
 <Button 
 android:id="@+id/Button02" 
 android:layout_width="100dip" 
-android:text="&lt;" 
+android:text="@string/Buttontextback" 
 android:onClick="backward" 
 android:layout_alignParentBottom="true"
 android:layout_alignParentLeft="true" 
@@ -73,7 +74,7 @@ android:layout_marginLeft="10dip" android:layout_height="40dip">
 android:id="@+id/Button03" 
 
 android:layout_width="100dip" 
-android:text="&gt;" 
+android:text="@string/Buttontextforward" 
 android:onClick="forward" 
 android:layout_marginRight="10dip" android:layout_alignParentBottom="true" android:layout_alignParentRight="true" android:layout_height="40dip">
 </Button>

@@ -1,13 +1,4 @@
-package de.tzwebdesign.TUCMensa;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
-
-import android.graphics.Bitmap;
-import android.widget.ImageView;
-import android.widget.TextView;
+package de.tzwebdesign.tucmensaapp;
 
 public class Essen {
 
@@ -45,5 +36,4 @@ public class Essen {
 		lastchange = lastchangeIn;
 	}
 
-	
 }
