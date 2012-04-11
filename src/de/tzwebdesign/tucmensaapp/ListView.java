@@ -31,6 +31,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * Listenansicht der App
+ */
 public class ListView extends Activity {
 
 	final Handler mHandler = new Handler();

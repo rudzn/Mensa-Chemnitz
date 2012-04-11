@@ -36,6 +36,9 @@ import android.widget.RelativeLayout;
 
 import android.widget.TextView;
 
+/**
+ * Hauptansicht der App
+ */
 public class TUCMensa extends Activity implements OnGestureListener {
 
 	final Handler mHandler = new Handler();
@@ -588,7 +591,10 @@ public class TUCMensa extends Activity implements OnGestureListener {
 		TextView04.setText(getError());
 	}
 
-	public void backward(View Button02) {
+	/**
+	 * @param Button Button
+	 */
+	public void backward(View Button) {
 
 		backwardnow();
 	}
@@ -609,7 +615,10 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 	}
 
-	public void forward(View Button03) {
+	/**
+	 * @param Button Button
+	 */
+	public void forward(View Button) {
 
 		forwardnow();
 	}

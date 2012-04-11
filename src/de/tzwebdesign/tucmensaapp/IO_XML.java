@@ -32,6 +32,9 @@ import android.os.Environment;
 
 import de.tzwebdesign.tucmensaapp.CustomException.errors;
 
+/**
+ * Klasse zur verwaltung von XML Dateien
+ */
 public class IO_XML {
 
 	private MensaService mensaService;
@@ -62,6 +65,7 @@ public class IO_XML {
 
 	/**
 	 * Konstruktor
+	 * @param parent Objekt welches dieses Objekt Initialisiert hat
 	 */
 	public IO_XML(MensaService parent) {
 
@@ -105,9 +109,9 @@ public class IO_XML {
 	 * 
 	 * @param mensa
 	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
+	 * @param Year Jahr
+	 * @param Month Monat
+	 * @param Day Tag
 	 * @return True wenn XML Datei vorhanden
 	 */
 	public boolean fileExists_XML(String mensa, int Year, int Month, int Day) {
@@ -122,11 +126,11 @@ public class IO_XML {
 	 * 
 	 * @param mensa
 	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
+	 * @param Year Jahr
+	 * @param Month Monat
+	 * @param Day Tag
 	 * @return True wenn speichern ohne fehler
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public boolean loadXMLtoSD(String mensa, int Year, int Month, int Day)
 			throws CustomException {
@@ -198,9 +202,9 @@ public class IO_XML {
 	 * 
 	 * @param mensa
 	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
+	 * @param Year Jahr
+	 * @param Month Monat
+	 * @param Day Tag
 	 * @return xml document
 	 * @throws CustomException
 	 */
@@ -240,9 +244,9 @@ public class IO_XML {
 	/**
 	 * Speichert data als XMl Datei auf SD
 	 * 
-	 * @param Year
-	 * @param Month
-	 * @param Day
+	 * @param Year Jahr
+	 * @param Month Monat
+	 * @param Day Tag
 	 * @param mensa
 	 *            rh oder st
 	 * @param data
@@ -319,9 +323,9 @@ public class IO_XML {
 	 * 
 	 * @param mensa
 	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
+	 * @param Year Jahr
+	 * @param Month Monat
+	 * @param Day Tag
 	 * @return XML als String
 	 * @throws CustomException
 	 */
@@ -356,11 +360,11 @@ public class IO_XML {
 	 * 
 	 * @param mensa
 	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
+	 * @param Year Jahr
+	 * @param Month Monat
+	 * @param Day Tag
 	 * @return EssenListe
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public List<Essen> getEssenList(String mensa, int Year, int Month, int Day)
 			throws CustomException {
@@ -442,7 +446,7 @@ public class IO_XML {
 	/**
 	 * delete XML file by name
 	 * 
-	 * @param filename
+	 * @param file Datei
 	 */
 	public void deleteXML(File file) {
 		synchronized (FileSync) {

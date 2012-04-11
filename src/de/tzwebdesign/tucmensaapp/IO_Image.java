@@ -16,6 +16,9 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import de.tzwebdesign.tucmensaapp.CustomException.errors;
 
+/**
+ * Klasse zur verwaltung von Bildern
+ */
 public class IO_Image {
 
 	private MensaService mensaService;
@@ -46,6 +49,7 @@ public class IO_Image {
 
 	/**
 	 * Konstruktor
+	 * @param parent Objekt welches dieses Objekt Initialisiert hat
 	 */
 	public IO_Image(MensaService parent) {
 
@@ -72,7 +76,8 @@ public class IO_Image {
 	 *            Bildname
 	 * @param image_pixel_size
 	 *            Bildgröße
-	 * @throws CustomException
+	 * @return True wenn Bild aktualisiert wurde (nicht implementiert=>immer False)
+	 * @throws CustomException CustomException
 	 */
 	public boolean loadIMAGEtoSD(int name, int image_pixel_size)
 			throws CustomException {
@@ -136,7 +141,7 @@ public class IO_Image {
 	 * @param image_pixel_size
 	 *            Bildgröße
 	 * @return Bild
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public Bitmap readImage(int name, int image_pixel_size)
 			throws CustomException {
@@ -257,7 +262,7 @@ public class IO_Image {
 	/**
 	 * delete Image by Name
 	 * 
-	 * @param filename
+	 * @param file Datei
 	 */
 	public void deleteXML(File file) {
 		synchronized (fileSempahor) {

@@ -24,11 +24,20 @@ public class FileStatusManagement {
 
 	private List<InternalObject> statusList = new ArrayList<InternalObject>();
 
+	/**
+	 * @param fileIn Filename
+	 * @param statusIn Status
+	 */
 	synchronized public void add(String fileIn, filestatus statusIn) {
 		statusList.add(new InternalObject(fileIn, statusIn));
 
 	}
 
+	/**
+	 * @param fileIn Filename
+	 * @param statusIn Status
+	 * @return True wenn beinhaltet
+	 */
 	synchronized public Boolean contains(String fileIn, filestatus statusIn) {
 		for (InternalObject item : statusList) {
 			if (item.file.equals(fileIn) && item.status.equals(statusIn))
@@ -37,6 +46,11 @@ public class FileStatusManagement {
 		return false;
 	}
 
+	/**
+	 * @param fileIn
+	 *            Filename
+	 * @return True wenn isReady
+	 */
 	synchronized public Boolean isReady(String fileIn) {
 		for (InternalObject item : statusList) {
 			if (item.file.equals(fileIn)
@@ -46,6 +60,11 @@ public class FileStatusManagement {
 		return false;
 	}
 
+	/**
+	 * @param fileIn
+	 *            Filename
+	 * @return True wenn isUpdated
+	 */
 	synchronized public Boolean isUpdated(String fileIn) {
 		for (InternalObject item : statusList) {
 			if (item.file.equals(fileIn)
@@ -55,23 +74,30 @@ public class FileStatusManagement {
 		return false;
 	}
 
+	/**
+	 * @param fileIn
+	 *            Filename
+	 */
 	synchronized public void remove(String fileIn) {
-		// for (InternalObject item : statusList) {
-		// if (item.file.equals(fileIn))
-		// statusList.remove(item);
-		// }
 
 		for (Iterator<InternalObject> it = statusList.iterator(); it.hasNext();)
 			if (it.next().file.equals(fileIn))
 				it.remove();
+
 	}
 
+	/**
+	 * @param fileIn Filename
+	 */
 	synchronized public void setready(String fileIn) {
 		remove(fileIn);
 
 		add(fileIn, filestatus.ready);
 	}
 
+	/**
+	 * @param fileIn Filename
+	 */
 	synchronized public void setupdated(String fileIn) {
 		remove(fileIn);
 

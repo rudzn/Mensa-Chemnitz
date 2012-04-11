@@ -19,20 +19,32 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 
+/**
+ * Verwaltungsdienst der App und damit Kernstück
+ */
 public class MensaService extends Service {
 
 	private volatile int mYear;
 	private volatile int mMonth;
 	private volatile int mDay;
 
+	/**
+	 * @return liefert Jahr
+	 */
 	public int getmYear() {
 		return mYear;
 	}
 
+	/**
+	 * @return liefert Monat
+	 */
 	public int getmMonth() {
 		return mMonth;
 	}
 
+	/**
+	 * @return liefert Tag
+	 */
 	public int getmDay() {
 		return mDay;
 	}
@@ -99,6 +111,9 @@ public class MensaService extends Service {
 		}
 	}
 
+	/**
+	 * Configurationsobjekt mit Nutzerkonfiguration der App
+	 */
 	public Configuration config;
 
 	@Override
@@ -106,6 +121,9 @@ public class MensaService extends Service {
 		refreshconfig();
 	}
 
+	/**
+	 * aktualisiere die Konfiguration in Laufzeit mit neuen daten aus Android
+	 */
 	public synchronized void refreshconfig() {
 		if (config != null) {
 			config.refresh();
@@ -188,7 +206,36 @@ public class MensaService extends Service {
 	 * 
 	 */
 	public enum status {
-		nonExisting, working, Existing, Updated, nowUpdated, nonUpdated
+		
+		/**
+		 * Datei existiert nicht
+		 */
+		nonExisting,
+		
+		/**
+		 * Datei in bearbeitung
+		 */
+		working,
+		
+		/**
+		 * Datei existiert
+		 */
+		Existing,
+		
+		/**
+		 * Datei wurde bereits aktualisiert
+		 */
+		Updated,
+		
+		/**
+		 * Datei wurde mit diesem Aufrug aktualisiert
+		 */
+		nowUpdated,
+		
+		/**
+		 * Datei wurde mit diesem aufruf nicht geupdated
+		 */
+		nonUpdated
 	};
 
 	/**
@@ -217,7 +264,7 @@ public class MensaService extends Service {
 	 * @param isExistingCheck
 	 *            Bild nicht nachladen wenn fehlend
 	 * @return Bild
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public Bitmap getImage(int imgName, boolean isExistingCheck)
 			throws CustomException {
@@ -239,7 +286,7 @@ public class MensaService extends Service {
 	 * @param image_pixel_size
 	 *            Bildgröße
 	 * @return Bild
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public Bitmap getImage(int imgName, boolean isExistingCheck,
 			int image_pixel_size) throws CustomException {
@@ -320,7 +367,7 @@ public class MensaService extends Service {
 	 *            Wenn nicht vorhanden auch nicht nachladen (überschreibt
 	 *            updateNow)
 	 * @return Status
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public status getImage_status(int imgName, boolean updateNow,
 			boolean isExistingCheck) throws CustomException {
@@ -343,7 +390,7 @@ public class MensaService extends Service {
 	 * @param image_pixel_size
 	 *            Bildgröße
 	 * @return Status
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public status getImage_status(int imgName, boolean updateNow,
 			boolean isExistingCheck, int image_pixel_size)
@@ -369,10 +416,21 @@ public class MensaService extends Service {
 
 	}
 
-	// private String loadIMAGEtoSD_string = "";
-
+	/**
+	 * Dateistatus
+	 */
 	public enum filestatus {
-		ready, updated
+		
+		/**
+		 * Ready (Datei liegt vor)
+		 */
+		
+		ready,
+		
+		/**
+		 * Updated (Liegt vor und wurde schon aktualisiert)
+		 */
+		updated
 	};
 
 	/**
@@ -446,7 +504,7 @@ public class MensaService extends Service {
 	 * @param isExistingCheck
 	 *            True unterdrückt aktualisierung, prüft nur existens
 	 * @return Essenliste
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public List<Essen> getEssenList(boolean isExistingCheck)
 			throws CustomException {
@@ -463,7 +521,7 @@ public class MensaService extends Service {
 	 * @param isExistingCheck
 	 *            True unterdrückt aktualisierung, prüft nur existens
 	 * @return Essenliste
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public List<Essen> getEssenList(String mensa, boolean isExistingCheck)
 			throws CustomException {
@@ -477,13 +535,13 @@ public class MensaService extends Service {
 	 * 
 	 * @param mensa
 	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
+	 * @param Year Jahr
+	 * @param Month Monat
+	 * @param Day Tag
 	 * @param isExistingCheck
 	 *            Wenn True aktualisieren unterdrücken
 	 * @return Essenliste
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public synchronized List<Essen> getEssenList(String mensa, int Year,
 			int Month, int Day, boolean isExistingCheck) throws CustomException {
@@ -506,7 +564,7 @@ public class MensaService extends Service {
 	 *            Wenn True wird keine aktualisierung durchgeführt, sonern nur
 	 *            auf existenz überprüft (überschreibt updateNow)
 	 * @return status
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public status getXML_status(boolean updateNow, boolean isExistingCheck)
 			throws CustomException {
@@ -529,7 +587,7 @@ public class MensaService extends Service {
 	 *            Wenn True wird keine aktualisierung durchgeführt, sonern nur
 	 *            auf existenz überprüft (überschreibt updateNow)
 	 * @return status
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public status getXML_status(String mensa, boolean updateNow,
 			boolean isExistingCheck) throws CustomException {
@@ -543,9 +601,9 @@ public class MensaService extends Service {
 	 * aus Netz geladen. Dabei wird gewartet das ein Slot zur bearbeitung frei
 	 * wird
 	 * 
-	 * @param Year
-	 * @param Month
-	 * @param Day
+	 * @param Year Jahr
+	 * @param Month Monat
+	 * @param Day Tag
 	 * @param updateNow
 	 *            Wenn True wird die Datei aktualisiert (auch wenn schon
 	 *            vorhanden)
@@ -553,7 +611,7 @@ public class MensaService extends Service {
 	 *            Wenn True wird keine aktualisierung vorgenommen sondern nur
 	 *            die existenz geprüft (überschreibt updateNow)
 	 * @return status
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public status getXML_status(int Year, int Month, int Day,
 			boolean updateNow, boolean isExistingCheck) throws CustomException {
@@ -570,9 +628,9 @@ public class MensaService extends Service {
 	 * 
 	 * @param mensa
 	 *            rh oder st
-	 * @param Year
-	 * @param Month
-	 * @param Day
+	 * @param Year Jahr
+	 * @param Month Monat
+	 * @param Day Tag
 	 * @param updateNow
 	 *            Wenn True wird die Datei aktualisiert (auch wenn schon
 	 *            vorhanden)
@@ -580,7 +638,7 @@ public class MensaService extends Service {
 	 *            Wenn True wird keine aktualisierung vorgenommen sondern nur
 	 *            die existenz geprüft (überschreibt updateNow)
 	 * @return status
-	 * @throws CustomException
+	 * @throws CustomException CustomException
 	 */
 	public status getXML_status(String mensa, int Year, int Month, int Day,
 			boolean updateNow, boolean isExistingCheck) throws CustomException {

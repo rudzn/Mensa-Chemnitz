@@ -10,6 +10,9 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
+/**
+ * Konfigurationsansicht der App
+ */
 public class Preferences extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
 
