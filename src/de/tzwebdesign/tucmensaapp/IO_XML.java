@@ -38,7 +38,14 @@ public class IO_XML {
 
 	private Object FileSync = new Object();
 
+	/**
+	 * zweistellig mit führender Null wenn nötig
+	 */
 	private NumberFormat twoDigitsNumberformat = NumberFormat.getInstance();
+
+	/**
+	 * Vierstellig mit führender Null wenn nötig
+	 */
 	private NumberFormat fourDigitsNumberformat = NumberFormat.getInstance();
 
 	/**
@@ -57,7 +64,9 @@ public class IO_XML {
 	 * Konstruktor
 	 */
 	public IO_XML(MensaService parent) {
+
 		mensaService = parent;
+
 		twoDigitsNumberformat.setMinimumIntegerDigits(2); // The minimum Digits
 															// required is 2
 		twoDigitsNumberformat.setMaximumIntegerDigits(2); // The maximum Digits

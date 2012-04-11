@@ -20,7 +20,14 @@ public class IO_Image {
 
 	private MensaService mensaService;
 
+	/**
+	 * zweistellig mit führender Null wenn nötig
+	 */
 	private NumberFormat twoDigitsNumberformat = NumberFormat.getInstance();
+
+	/**
+	 * Vierstellig mit führender Null wenn nötig
+	 */
 	private NumberFormat fourDigitsNumberformat = NumberFormat.getInstance();
 
 	/**
@@ -41,7 +48,9 @@ public class IO_Image {
 	 * Konstruktor
 	 */
 	public IO_Image(MensaService parent) {
+
 		mensaService = parent;
+
 		twoDigitsNumberformat.setMinimumIntegerDigits(2); // The minimum Digits
 															// required is 2
 		twoDigitsNumberformat.setMaximumIntegerDigits(2); // The maximum Digits
@@ -116,8 +125,6 @@ public class IO_Image {
 			throw new CustomException(errors.ConnectionError);
 
 		}
-		// loadIMAGEtoSD_string = "";
-		// return true;
 
 	}
 
