@@ -15,7 +15,7 @@ public class FileWorking {
 	private List<String> fileList = new ArrayList<String>();
 
 	/**
-	 * löscht die Datei wieder aus 'in arbeit'
+	 * lÃ¶scht die Datei wieder aus 'in arbeit'
 	 * 
 	 * @param name
 	 *            Dateiname

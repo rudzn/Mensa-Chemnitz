@@ -67,7 +67,7 @@ public class Essen {
 	public Boolean schwein;
 	
 	/**
-	 * letzte änderung de Essens als Time String
+	 * letzte Ã¤nderung de Essens als Time String
 	 */
 	public String lastchange;
 
@@ -84,7 +84,7 @@ public class Essen {
 	 * @param alkoholIn mit alkohol
 	 * @param rindIn mit rind
 	 * @param schweinIn mit schwein
-	 * @param lastchangeIn letzte änderung de Essens als Time String
+	 * @param lastchangeIn letzte Ã¤nderung de Essens als Time String
 	 */
 	public Essen(String nameIn, int nummerIn, String textIn, int bildnummerIn,
 			int wertungIn, String preisgastIn, String preismitarbeiterIn,

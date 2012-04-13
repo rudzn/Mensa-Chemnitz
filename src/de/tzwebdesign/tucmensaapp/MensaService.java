@@ -20,7 +20,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 
 /**
- * Verwaltungsdienst der App und damit Kernstück
+ * Verwaltungsdienst der App und damit KernstÃ¼ck
  */
 public class MensaService extends Service {
 
@@ -51,7 +51,7 @@ public class MensaService extends Service {
 
 	/**
 	 * Setzt die Datumsfelder unter einbeziehung des UserKonfigurierbaren
-	 * Offsets Wochenenden werden übersprungen
+	 * Offsets Wochenenden werden Ã¼bersprungen
 	 */
 	private void setdate() {
 
@@ -67,16 +67,16 @@ public class MensaService extends Service {
 		}
 
 		mYear = c.get(Calendar.YEAR);
-		// +1 Weil Java bei Monaten von 0 bis 11 zählt
+		// +1 Weil Java bei Monaten von 0 bis 11 zÃ¤hlt
 		mMonth = c.get(Calendar.MONTH) + 1;
 		mDay = c.get(Calendar.DAY_OF_MONTH);
 	}
 
 	/**
-	 * Check ob Datum mittlerweile verändert (Weil App lange im Standby usw)
+	 * Check ob Datum mittlerweile verÃ¤ndert (Weil App lange im Standby usw)
 	 * 
 	 * @return Liefert True wenn Datum von App mit neu berechnetem nicht
-	 *         übereinstimmt
+	 *         Ã¼bereinstimmt
 	 */
 	public boolean checkdate() {
 
@@ -92,7 +92,7 @@ public class MensaService extends Service {
 		}
 		if (mYear != c.get(Calendar.YEAR))
 			return true;
-		// +1 weil Java bei Monaten von 0 bis 11 zählt
+		// +1 weil Java bei Monaten von 0 bis 11 zÃ¤hlt
 		if (mMonth != (c.get(Calendar.MONTH) + 1))
 			return true;
 		if (mDay != c.get(Calendar.DAY_OF_MONTH))
@@ -284,7 +284,7 @@ public class MensaService extends Service {
 	 * @param isExistingCheck
 	 *            Bild nicht nachladen wenn fehlend
 	 * @param image_pixel_size
-	 *            Bildgröße
+	 *            BildgrÃ¶ÃŸe
 	 * @return Bild
 	 * @throws CustomException CustomException
 	 */
@@ -306,9 +306,9 @@ public class MensaService extends Service {
 	 * @param updateNow
 	 *            Bild aktualisieren
 	 * @param isExistingCheck
-	 *            Bild nicht nachladen wenn fehlend (überschreibt updateNow)
+	 *            Bild nicht nachladen wenn fehlend (Ã¼berschreibt updateNow)
 	 * @param image_pixel_size
-	 *            Bildgröße
+	 *            BildgrÃ¶ÃŸe
 	 * @return Status des Bildes
 	 * @throws CustomException
 	 */
@@ -357,14 +357,14 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Liefert den Bildstatus und Läd es wenn nötig nach (je nach parameter)
+	 * Liefert den Bildstatus und LÃ¤d es wenn nÃ¶tig nach (je nach parameter)
 	 * 
 	 * @param imgName
 	 *            Bildname
 	 * @param updateNow
 	 *            aktualisiert Bild
 	 * @param isExistingCheck
-	 *            Wenn nicht vorhanden auch nicht nachladen (überschreibt
+	 *            Wenn nicht vorhanden auch nicht nachladen (Ã¼berschreibt
 	 *            updateNow)
 	 * @return Status
 	 * @throws CustomException CustomException
@@ -378,17 +378,17 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Liefert den Bildstatus und Läd es wenn nötig nach (je nach parameter)
+	 * Liefert den Bildstatus und LÃ¤d es wenn nÃ¶tig nach (je nach parameter)
 	 * 
 	 * @param imgName
 	 *            Bildname
 	 * @param updateNow
 	 *            aktualisiert Bild
 	 * @param isExistingCheck
-	 *            Wenn nicht vorhanden auch nicht nachladen (überschreibt
+	 *            Wenn nicht vorhanden auch nicht nachladen (Ã¼berschreibt
 	 *            updateNow)
 	 * @param image_pixel_size
-	 *            Bildgröße
+	 *            BildgrÃ¶ÃŸe
 	 * @return Status
 	 * @throws CustomException CustomException
 	 */
@@ -439,7 +439,7 @@ public class MensaService extends Service {
 	private FileStatusManagement xmlfileStatusObject = new FileStatusManagement();
 
 	/**
-	 * Prüft ob Datei vorhanden, wenn nicht wird sie aus Netz geladen
+	 * PrÃ¼ft ob Datei vorhanden, wenn nicht wird sie aus Netz geladen
 	 * 
 	 * @param mensa
 	 *            rh oder st
@@ -451,7 +451,7 @@ public class MensaService extends Service {
 	 *            vorhanden)
 	 * @param isExistingCheck
 	 *            Wenn True wird keine aktualisierung vorgenommen sondern nur
-	 *            die existenz geprüft (überschreibt updateNow)
+	 *            die existenz geprÃ¼ft (Ã¼berschreibt updateNow)
 	 * @return
 	 * @throws CustomException
 	 */
@@ -502,7 +502,7 @@ public class MensaService extends Service {
 	 * Liefert XML des in der App aktellen Datums (Berechnets Datum)
 	 * 
 	 * @param isExistingCheck
-	 *            True unterdrückt aktualisierung, prüft nur existens
+	 *            True unterdrÃ¼ckt aktualisierung, prÃ¼ft nur existens
 	 * @return Essenliste
 	 * @throws CustomException CustomException
 	 */
@@ -519,7 +519,7 @@ public class MensaService extends Service {
 	 * @param mensa
 	 *            rh oder st
 	 * @param isExistingCheck
-	 *            True unterdrückt aktualisierung, prüft nur existens
+	 *            True unterdrÃ¼ckt aktualisierung, prÃ¼ft nur existens
 	 * @return Essenliste
 	 * @throws CustomException CustomException
 	 */
@@ -531,7 +531,7 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Liefert XML für ein bestimmtes Datum
+	 * Liefert XML fÃ¼r ein bestimmtes Datum
 	 * 
 	 * @param mensa
 	 *            rh oder st
@@ -539,7 +539,7 @@ public class MensaService extends Service {
 	 * @param Month Monat
 	 * @param Day Tag
 	 * @param isExistingCheck
-	 *            Wenn True aktualisieren unterdrücken
+	 *            Wenn True aktualisieren unterdrÃ¼cken
 	 * @return Essenliste
 	 * @throws CustomException CustomException
 	 */
@@ -553,7 +553,7 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Prüft ob Datei vorhanden (für aktuelles App Datum), wenn nicht wird sie
+	 * PrÃ¼ft ob Datei vorhanden (fÃ¼r aktuelles App Datum), wenn nicht wird sie
 	 * aus Netz gelden. Dabei wird gewartet das ein Slot zur bearbeitung frei
 	 * wird
 	 * 
@@ -561,8 +561,8 @@ public class MensaService extends Service {
 	 *            Wenn True wird die Datei aktualisiert (auch wenn schon
 	 *            vorhanden)
 	 * @param isExistingCheck
-	 *            Wenn True wird keine aktualisierung durchgeführt, sonern nur
-	 *            auf existenz überprüft (überschreibt updateNow)
+	 *            Wenn True wird keine aktualisierung durchgefÃ¼hrt, sonern nur
+	 *            auf existenz Ã¼berprÃ¼ft (Ã¼berschreibt updateNow)
 	 * @return status
 	 * @throws CustomException CustomException
 	 */
@@ -574,7 +574,7 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Prüft ob Datei vorhanden (für aktuelles App Datum), wenn nicht wird sie
+	 * PrÃ¼ft ob Datei vorhanden (fÃ¼r aktuelles App Datum), wenn nicht wird sie
 	 * aus Netz gelden. Dabei wird gewartet das ein Slot zur bearbeitung frei
 	 * wird
 	 * 
@@ -584,8 +584,8 @@ public class MensaService extends Service {
 	 *            Wenn True wird die Datei aktualisiert (auch wenn schon
 	 *            vorhanden)
 	 * @param isExistingCheck
-	 *            Wenn True wird keine aktualisierung durchgeführt, sonern nur
-	 *            auf existenz überprüft (überschreibt updateNow)
+	 *            Wenn True wird keine aktualisierung durchgefÃ¼hrt, sonern nur
+	 *            auf existenz Ã¼berprÃ¼ft (Ã¼berschreibt updateNow)
 	 * @return status
 	 * @throws CustomException CustomException
 	 */
@@ -597,7 +597,7 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Prüft ob Datei vorhanden (für Datum von prameter), wenn nicht wird sie
+	 * PrÃ¼ft ob Datei vorhanden (fÃ¼r Datum von prameter), wenn nicht wird sie
 	 * aus Netz geladen. Dabei wird gewartet das ein Slot zur bearbeitung frei
 	 * wird
 	 * 
@@ -609,7 +609,7 @@ public class MensaService extends Service {
 	 *            vorhanden)
 	 * @param isExistingCheck
 	 *            Wenn True wird keine aktualisierung vorgenommen sondern nur
-	 *            die existenz geprüft (überschreibt updateNow)
+	 *            die existenz geprÃ¼ft (Ã¼berschreibt updateNow)
 	 * @return status
 	 * @throws CustomException CustomException
 	 */
@@ -622,7 +622,7 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Prüft ob Datei vorhanden (für Datum von prameter), wenn nicht wird sie
+	 * PrÃ¼ft ob Datei vorhanden (fÃ¼r Datum von prameter), wenn nicht wird sie
 	 * aus Netz geladen. Dabei wird gewartet das ein Slot zur bearbeitung frei
 	 * wird
 	 * 
@@ -636,7 +636,7 @@ public class MensaService extends Service {
 	 *            vorhanden)
 	 * @param isExistingCheck
 	 *            Wenn True wird keine aktualisierung vorgenommen sondern nur
-	 *            die existenz geprüft (überschreibt updateNow)
+	 *            die existenz geprÃ¼ft (Ã¼berschreibt updateNow)
 	 * @return status
 	 * @throws CustomException CustomException
 	 */
@@ -679,12 +679,12 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Löscht Bilder und Essenslisten die veraltet sind aus dem Speicher
+	 * LÃ¶scht Bilder und Essenslisten die veraltet sind aus dem Speicher
 	 */
 	public void deleteOldFiles() {
 
 		// Kann in nachfolgenden Versionen wieder weg
-		CreateDir(); // Reicht die .nomedia datei nach für allte installationen
+		CreateDir(); // Reicht die .nomedia datei nach fÃ¼r allte installationen
 
 		Calendar caldel = new GregorianCalendar(mYear, mMonth, mDay);
 
@@ -792,7 +792,7 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Lädt so lange XML Dateien (Essenstage) aus dem netz bis keine mehr
+	 * LÃ¤dt so lange XML Dateien (Essenstage) aus dem netz bis keine mehr
 	 * vorliegen / aktualisiert bestehende
 	 * 
 	 * @return true wenn daten aktualisert
@@ -802,7 +802,7 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Lädt so lange XML Dateien (Essenstage) aus dem netz bis keine mehr
+	 * LÃ¤dt so lange XML Dateien (Essenstage) aus dem netz bis keine mehr
 	 * vorliegen / aktualisiert bestehende
 	 * 
 	 * @param mensa
@@ -843,7 +843,7 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Erzeugt den Statusspeicher über XML Dateien
+	 * Erzeugt den Statusspeicher Ã¼ber XML Dateien
 	 * 
 	 * @param mensa
 	 *            rh oder st
@@ -854,7 +854,7 @@ public class MensaService extends Service {
 	}
 
 	/**
-	 * Erzeugt den Statusspeicher über XML Dateien
+	 * Erzeugt den Statusspeicher Ã¼ber XML Dateien
 	 * 
 	 * @param mensa
 	 *            rh oder st

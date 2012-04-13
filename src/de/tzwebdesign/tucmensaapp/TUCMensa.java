@@ -251,7 +251,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	}
 
 	/**
-	 * Lädt Essen aus Speicher wenn verfügbar und startet danach eine
+	 * LÃ¤dt Essen aus Speicher wenn verfÃ¼gbar und startet danach eine
 	 * aktualisierung (ansonsten gleich aus Netz geladen)
 	 */
 	private void ladeService() {
@@ -303,15 +303,15 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	private Object lock2 = new Object();
 
 	/**
-	 * Name des Bildes, wenn schnell geblättert wird, und die Threads vom
-	 * Bildladen zurückkehren, soll nur das zuletzt gesuchte Bild noch
+	 * Name des Bildes, wenn schnell geblÃ¤ttert wird, und die Threads vom
+	 * Bildladen zurÃ¼ckkehren, soll nur das zuletzt gesuchte Bild noch
 	 * gespeichert werden Ansonsten Flackern die Bilder in wilder reihenfolge
 	 * vorm Nutzer, und am ende bleibt beliebig eins stehen.
 	 */
 	private int imageState;
 
 	/**
-	 * Gibt Bildzurück was Service in image zwischengespeichert hat
+	 * Gibt BildzurÃ¼ck was Service in image zwischengespeichert hat
 	 * 
 	 * @return Bild
 	 */
@@ -350,7 +350,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	}
 
 	/**
-	 * Lädt in einem Thread das für die UI benötigte Bild asyncron
+	 * LÃ¤dt in einem Thread das fÃ¼r die UI benÃ¶tigte Bild asyncron
 	 * 
 	 * @param value
 	 *            Bildname
@@ -389,8 +389,8 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	}
 
 	/**
-	 * Startet einen Thread der im Hintergrund restliche benötige Bilder
-	 * vorbereitet/runterlädt
+	 * Startet einen Thread der im Hintergrund restliche benÃ¶tige Bilder
+	 * vorbereitet/runterlÃ¤dt
 	 */
 	private void prepareAllImages() {
 		if (!mensaService.config.imageloading)
@@ -428,13 +428,13 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	
 
 	/**
-	 * Lädt Einstellungen
+	 * LÃ¤dt Einstellungen
 	 */
 	private void refreshConfig() {
 
 		mensaService.refreshconfig();
 
-		// Imagegröße im Layout ändern
+		// ImagegrÃ¶ÃŸe im Layout Ã¤ndern
 		ImageView image1 = (ImageView) findViewById(R.id.ImageView01);
 
 		if (!mensaService.config.imageSizeSmall) {
@@ -473,7 +473,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	}
 
 	/**
-	 * Erzeugt das Menü für den Menübutton
+	 * Erzeugt das MenÃ¼ fÃ¼r den MenÃ¼button
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -484,7 +484,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	}
 
 	/**
-	 * Verarbeitet den Klick auf Menüelemente
+	 * Verarbeitet den Klick auf MenÃ¼elemente
 	 */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -503,7 +503,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	}
 
 	/**
-	 * Ändert das angezeigte Bild im UI
+	 * Ã„ndert das angezeigte Bild im UI
 	 */
 	private synchronized void PushImageIn() {
 
@@ -518,7 +518,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	}
 
 	/**
-	 * Lädt Essensdaten&Bild ins UI
+	 * LÃ¤dt Essensdaten&Bild ins UI
 	 */
 	private synchronized void refresh() {
 
@@ -562,13 +562,13 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 		if (mensaService.config.preiskat == "g")
 			TextView_Preis.setText(this.getString(R.string.Preiskat) + " "
-					+ element.preisgast + "€");
+					+ element.preisgast + "â‚¬");
 		if (mensaService.config.preiskat == "m")
 			TextView_Preis.setText(this.getString(R.string.Preiskat) + " "
-					+ element.preismitarbeiter + "€");
+					+ element.preismitarbeiter + "â‚¬");
 		if (mensaService.config.preiskat == "s")
 			TextView_Preis.setText(this.getString(R.string.Preiskat) + " "
-					+ element.preisstudent + "€");
+					+ element.preisstudent + "â‚¬");
 
 		// /////////////////
 		TextView TextView1 = (TextView) findViewById(R.id.TextView01);
@@ -624,7 +624,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	}
 
 	/**
-	 * Wechselt zum nächsten Essen
+	 * Wechselt zum nÃ¤chsten Essen
 	 */
 	private void forwardnow() {
 

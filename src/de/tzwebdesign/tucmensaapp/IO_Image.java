@@ -24,12 +24,12 @@ public class IO_Image {
 	private MensaService mensaService;
 
 	/**
-	 * zweistellig mit führender Null wenn nötig
+	 * zweistellig mit fÃ¼hrender Null wenn nÃ¶tig
 	 */
 	private NumberFormat twoDigitsNumberformat = NumberFormat.getInstance();
 
 	/**
-	 * Vierstellig mit führender Null wenn nötig
+	 * Vierstellig mit fÃ¼hrender Null wenn nÃ¶tig
 	 */
 	private NumberFormat fourDigitsNumberformat = NumberFormat.getInstance();
 
@@ -70,12 +70,12 @@ public class IO_Image {
 	}
 
 	/**
-	 * Lädt Bild aus Netz und speichert es auf SD
+	 * LÃ¤dt Bild aus Netz und speichert es auf SD
 	 * 
 	 * @param name
 	 *            Bildname
 	 * @param image_pixel_size
-	 *            Bildgröße
+	 *            BildgrÃ¶ÃŸe
 	 * @return True wenn Bild aktualisiert wurde (nicht implementiert=>immer False)
 	 * @throws CustomException CustomException
 	 */
@@ -139,7 +139,7 @@ public class IO_Image {
 	 * @param name
 	 *            Bildname
 	 * @param image_pixel_size
-	 *            Bildgröße
+	 *            BildgrÃ¶ÃŸe
 	 * @return Bild
 	 * @throws CustomException CustomException
 	 */
@@ -182,7 +182,7 @@ public class IO_Image {
 	 * @param image
 	 *            Bild
 	 * @param image_pixel_size
-	 *            Bildgröße
+	 *            BildgrÃ¶ÃŸe
 	 * @throws CustomException
 	 */
 	private void saveImage(int name, Bitmap image, int image_pixel_size)
@@ -222,12 +222,12 @@ public class IO_Image {
 	}
 
 	/**
-	 * Prüft ob Bild vorhanden
+	 * PrÃ¼ft ob Bild vorhanden
 	 * 
 	 * @param name
 	 *            Bildname
 	 * @param image_pixel_size
-	 *            Bildgröße
+	 *            BildgrÃ¶ÃŸe
 	 * @return True wenn Bild existiert
 	 */
 	public boolean fileExists_Image(int name, int image_pixel_size) {
@@ -239,12 +239,12 @@ public class IO_Image {
 	}
 
 	/**
-	 * Erzeugt Dateinamen für Bild
+	 * Erzeugt Dateinamen fÃ¼r Bild
 	 * 
 	 * @param name
 	 *            Bildname
 	 * @param image_pixel_size
-	 *            Bildgröße
+	 *            BildgrÃ¶ÃŸe
 	 * @return Dateiname
 	 */
 	private String getFilename_Image(int name, int image_pixel_size) {

@@ -42,12 +42,12 @@ public class IO_XML {
 	private Object FileSync = new Object();
 
 	/**
-	 * zweistellig mit führender Null wenn nötig
+	 * zweistellig mit fÃ¼hrender Null wenn nÃ¶tig
 	 */
 	private NumberFormat twoDigitsNumberformat = NumberFormat.getInstance();
 
 	/**
-	 * Vierstellig mit führender Null wenn nötig
+	 * Vierstellig mit fÃ¼hrender Null wenn nÃ¶tig
 	 */
 	private NumberFormat fourDigitsNumberformat = NumberFormat.getInstance();
 
@@ -86,7 +86,7 @@ public class IO_XML {
 	}
 
 	/**
-	 * Erzeugt den Speicher-Dateinamen für XML Datei
+	 * Erzeugt den Speicher-Dateinamen fÃ¼r XML Datei
 	 * 
 	 * @param mensa
 	 *            rh oder st
@@ -105,7 +105,7 @@ public class IO_XML {
 	}
 
 	/**
-	 * Prüft ob XML Datei vorhanden
+	 * PrÃ¼ft ob XML Datei vorhanden
 	 * 
 	 * @param mensa
 	 *            rh oder st
@@ -122,7 +122,7 @@ public class IO_XML {
 	}
 
 	/**
-	 * Lädt XML und speichert auf SD
+	 * LÃ¤dt XML und speichert auf SD
 	 * 
 	 * @param mensa
 	 *            rh oder st
@@ -356,7 +356,7 @@ public class IO_XML {
 	}
 
 	/**
-	 * Liest Essen aus XML Datei für bestimmtes Datum
+	 * Liest Essen aus XML Datei fÃ¼r bestimmtes Datum
 	 * 
 	 * @param mensa
 	 *            rh oder st

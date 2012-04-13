@@ -26,7 +26,7 @@ public class Configuration {
 	}
 
 	/**
-	 * aktualisiert die Werte / l‰dt sie neu in die Laufzeit
+	 * aktualisiert die Werte / l√§dt sie neu in die Laufzeit
 	 */
 	public void refresh() {
 
