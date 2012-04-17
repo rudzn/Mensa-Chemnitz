@@ -134,7 +134,7 @@ public class IO_XML {
 	 */
 	public boolean loadXMLtoSD(String mensa, int Year, int Month, int Day)
 			throws CustomException {
-		if (mensa == "st")
+		if (mensa.compareTo("st") == 0)
 			mensa = "strana";
 		try {
 			String url = "http://www-user.tu-chemnitz.de/~fnor/mensa/webservice_xml_2.php?mensa="
@@ -147,6 +147,9 @@ public class IO_XML {
 					+ Year;
 
 			URL aURL;
+
+            if (mensa.compareTo("strana") == 0)
+                mensa = "st";
 
 			aURL = new URL(url);
 

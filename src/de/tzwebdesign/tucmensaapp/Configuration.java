@@ -44,4 +44,16 @@ public class Configuration {
 			image_pixel_size = 190;
 
 	}
+
+    public void save(){
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("offset", offset.toString());
+        editor.putBoolean("ListViewFirst", ListViewFirst);
+        editor.putString("preiskat", preiskat);
+        editor.putString("mensa", mensa);
+        editor.putString("sprache", sprache);
+        editor.putBoolean("imageloading", imageloading);
+        editor.putBoolean("imagesize", imageSizeSmall);
+        editor.commit();
+    }
 }

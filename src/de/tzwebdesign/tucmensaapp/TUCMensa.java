@@ -3,7 +3,11 @@ package de.tzwebdesign.tucmensaapp;
 import java.text.NumberFormat;
 import java.util.List;
 
+import android.app.ActionBar;
+import android.os.Build;
+import android.support.v4.view.MenuCompat;
 import android.view.*;
+import android.widget.*;
 import de.tzwebdesign.tucmensaapp.R;
 import de.tzwebdesign.tucmensaapp.MensaService.status;
 
@@ -22,13 +26,6 @@ import android.os.IBinder;
 import android.os.Handler;
 
 import android.view.GestureDetector.OnGestureListener;
-
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-
-import android.widget.RelativeLayout;
-
-import android.widget.TextView;
 
 /**
  * Hauptansicht der App
@@ -104,7 +101,7 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	/**
 	 * Speichert die aktuelle essensliste auf nodes
 	 * 
-	 * @param name
+	 * @param essenListe
 	 */
 	private void setNodes(List<Essen> essenListe) {
 		synchronized (lock1) {
@@ -225,9 +222,19 @@ public class TUCMensa extends Activity implements OnGestureListener {
 
 	private boolean ListViewShowed = false;
 
+    private void refreshActionSpinner(){
+        ActionBar bar = getActionBar();
+        if(Build.VERSION.SDK_INT >= 11 && bar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST){
+            int selected = 0;
+            if(mensaService.config.mensa.compareTo("st") == 0) selected = 1;
+            bar.setSelectedNavigationItem(selected);
+        }
+    }
 	
 	private void Resume() {
 		refreshConfig();
+        refreshActionSpinner();
+
 		if (config_update || mensaService.checkdate()) {
 			essen_position = 0;
 			config_update = false;
@@ -474,6 +481,40 @@ public class TUCMensa extends Activity implements OnGestureListener {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actionbar, menu);
 
+        // später ActionBarSherlock benutzen
+        if(Build.VERSION.SDK_INT >= 11){
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.Mensen, android.R.layout.simple_spinner_item);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            ActionBar.OnNavigationListener mensaChanger = new ActionBar.OnNavigationListener() {
+
+                @Override
+                public boolean onNavigationItemSelected(int position, long itemId) {
+                    switch(position){
+                        case 0:
+                            mensaService.config.mensa = "rh";
+                            break;
+                        case 1:
+                            mensaService.config.mensa = "st";
+                            break;
+                        default:break;
+                    }
+                    mensaService.config.save();
+                    refreshConfig();  //nötig???
+                    ladeService();
+                    return true;
+                }
+            };
+
+            ActionBar bar = getActionBar();
+            bar.setDisplayShowTitleEnabled(false);
+            bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+            bar.setListNavigationCallbacks(adapter, mensaChanger);
+            refreshActionSpinner();
+        }else{
+            MenuCompat.setShowAsAction(menu.findItem(R.id.menu_listview), 0);
+            MenuCompat.setShowAsAction(menu.findItem(R.id.menu_settings), 1);
+        }
 		return true;
 	}
 
