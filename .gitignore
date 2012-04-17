@@ -15,5 +15,7 @@ gen/
 # Local configuration file (sdk path, etc)
 local.properties
 /.idea
+/project.properties
 /TUCMensa.iml
+/Mensa-Chemnitz.iml
 /out

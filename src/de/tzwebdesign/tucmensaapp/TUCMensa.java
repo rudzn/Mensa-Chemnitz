@@ -3,6 +3,7 @@ package de.tzwebdesign.tucmensaapp;
 import java.text.NumberFormat;
 import java.util.List;
 
+import android.view.*;
 import de.tzwebdesign.tucmensaapp.R;
 import de.tzwebdesign.tucmensaapp.MensaService.status;
 
@@ -20,14 +21,7 @@ import android.os.IBinder;
 
 import android.os.Handler;
 
-import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.GestureDetector.OnGestureListener;
-import android.view.Window;
-
-import android.view.MotionEvent;
 
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -477,8 +471,8 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		menu.add(0, 0, 0, R.string.Konfiguration);
-		menu.add(0, 1, 0, R.string.Listenansicht);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actionbar, menu);
 
 		return true;
 	}
@@ -488,16 +482,13 @@ public class TUCMensa extends Activity implements OnGestureListener {
 	 */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case 0:
+		case R.id.menu_settings:
 			config();
 			return true;
-		case 1:
-
+		case R.id.menu_listview:
 			Intent it = new Intent(this, ListView.class);
-
 			startActivity(it);
 			return true;
-
 		}
 		return false;
 	}
